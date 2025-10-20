@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://bk5l7umgip4v5"]
+[gd_scene load_steps=21 format=3 uid="uid://bk5l7umgip4v5"]
 
 [ext_resource type="Script" uid="uid://tq58jihq45r4" path="res://scripts/main.gd" id="1_eka3w"]
 [ext_resource type="Script" uid="uid://xfwg5cs2hgt0" path="res://addons/finite_state_machine/scripts/finite_state_machine.gd" id="2_wl1fq"]
@@ -9,11 +9,15 @@
 [ext_resource type="Script" uid="uid://bmnhtnr23kll1" path="res://bille.gd" id="8_5vw27"]
 [ext_resource type="Script" uid="uid://bvg11h2cldivg" path="res://csg_box_3d.gd" id="8_kek77"]
 [ext_resource type="PackedScene" uid="uid://xroxh5wjbwp6" path="res://line_follower_sensor.tscn" id="9_a0528"]
+[ext_resource type="Script" uid="uid://bn1m8ev8kjng0" path="res://rigid_body_3d.gd" id="10_dg77c"]
+[ext_resource type="PackedScene" uid="uid://d1l6lr3xd6jbx" path="res://assets/voiture_mk2.blend" id="10_efxa6"]
+[ext_resource type="PackedScene" uid="uid://difir3bb2pwv4" path="res://assets/parcours.blend" id="12_dg77c"]
+[ext_resource type="PackedScene" uid="uid://dw8264gchc35g" path="res://assets/obstacle.blend" id="13_ycdy4"]
 
 [sub_resource type="GDScript" id="GDScript_d2gei"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y2p80"]
-albedo_color = Color(1, 0, 1, 1)
+albedo_color = Color(0, 0, 0.3529412, 1)
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_jv41d"]
 sky_top_color = Color(0.635294, 0.756863, 0.901961, 1)
@@ -29,6 +33,9 @@ background_mode = 2
 sky = SubResource("Sky_nfout")
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_iys2i"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_efxa6"]
+size = Vector3(0.09280014, 0.07185936, 0.20959854)
 
 [node name="Main" type="Node3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0100098, 0.0284071, -0.0135775)
@@ -60,16 +67,14 @@ size = Vector3(5, 0.5, 5)
 material = SubResource("StandardMaterial3D_y2p80")
 
 [node name="PiCar#RayCast3D" type="RayCast3D" parent="."]
-transform = Transform3D(-7.39508e-06, 1, 0, -1, -7.39508e-06, 0, 0, 0, 1, 0, 0.048, 0)
+transform = Transform3D(-7.39508e-06, 1, 0, -1, -7.39508e-06, 0, 0, 0, 1, -0.097385734, 0.1812298, 0.087667465)
+visible = false
 target_position = Vector3(0, -0.8, 0)
 hit_from_inside = true
 
-[node name="PiCar#Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(-4.37114e-08, -0.25881898, 0.9659259, 0, 0.9659259, 0.25881898, -1, 1.131334e-08, -4.222197e-08, 2.9151235, 0.20810668, -0.30064467)
-current = true
-
 [node name="PiCar#line_follower_sensor" parent="." instance=ExtResource("9_a0528")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -0.166544, 0.0646156, 0.00079032)
+visible = false
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_c8ocf")
@@ -108,6 +113,7 @@ text = "Quit"
 
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.000003, 0.0713751, -0.61904144)
+visible = false
 use_collision = true
 size = Vector3(0.1, 0.1, 0.1)
 script = ExtResource("8_kek77")
@@ -125,6 +131,27 @@ shape = SubResource("SphereShape3D_iys2i")
 transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, -0.0329106, 0)
 radial_segments = 32
 rings = 32
+
+[node name="RigidBody3D" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1825937, 0.20853192, -0.13294475)
+script = ExtResource("10_dg77c")
+
+[node name="voiture_mk2" parent="RigidBody3D" instance=ExtResource("10_efxa6")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 0, 0, 0)
+
+[node name="PiCar#Camera3D" type="Camera3D" parent="RigidBody3D"]
+transform = Transform3D(0.17364822, 0.30432233, -0.93660784, 0, 0.95105654, 0.309017, 0.9848077, -0.053660255, 0.16514927, -0.3, 0.18, 0.1)
+current = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 0, 0.029, 0)
+shape = SubResource("BoxShape3D_efxa6")
+
+[node name="parcours" parent="." instance=ExtResource("12_dg77c")]
+transform = Transform3D(0.002, 0, 0, 0, 0.002, 0, 0, 0, 0.002, 0.97070825, 0.06389761, 0.114543535)
+
+[node name="obstacle" parent="." instance=ExtResource("13_ycdy4")]
+transform = Transform3D(0.051558107, 0, -0.19324017, 0, 0.2, 0, 0.19324017, 0, 0.051558107, -0.05921228, 0.007995229, -0.6167521)
 
 [connection signal="toggled" from="GridContainer/CheckBox" to="." method="_on_check_box_toggled"]
 [connection signal="pressed" from="GridContainer/btn_Connect" to="." method="_on_connect_pressed"]

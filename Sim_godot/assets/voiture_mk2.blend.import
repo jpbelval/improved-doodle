@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://byj45xn4tx86d"
-path="res://.godot/imported/Cybertruck.blend-6e2dd3b13dec55654f8ae0b29617536c.scn"
+uid="uid://d1l6lr3xd6jbx"
+path="res://.godot/imported/voiture_mk2.blend-79d561e1240fd676244c01e1983071f5.scn"
 
 [deps]
 
-source_file="res://assets/Cybertruck.blend"
-dest_files=["res://.godot/imported/Cybertruck.blend-6e2dd3b13dec55654f8ae0b29617536c.scn"]
+source_file="res://assets/voiture_mk2.blend"
+dest_files=["res://.godot/imported/voiture_mk2.blend-79d561e1240fd676244c01e1983071f5.scn"]
 
 [params]
 
@@ -56,4 +56,4 @@ blender/materials/export_materials=1
 blender/animation/limit_playback=true
 blender/animation/always_sample=true
 blender/animation/group_tracks=true
-gltf/naming_version=0
+gltf/naming_version=2
