@@ -1,8 +1,10 @@
 extends Node3D
 
-const maxAcc = 0.2 # m/s2
-const maxDec = -0.2 # m/s2
-const maxTurn = 45.0 # deg/s
+@onready var color_ray = $ColorRay
+
+const maxAcc = 0.3 # m/s2
+const maxDec = -0.3 # m/s2
+const maxTurn = 120.0 # deg/s
 
 var movementSpeed
 var wheelAngle
@@ -61,13 +63,15 @@ func move(delta: float) -> void:
 	pass
 	
 func lineFollower() -> void:
-	print('movement')
-	print([movementSpeed, speedTarget])
-	print('turnAngle')
-	print([wheelAngle, wheelAngleTarget])
-	if movementSpeed != speedTarget:
-		wheelAngleTarget = 150
-		speedTarget = 0.34
+	if onLine():
+		wheelAngleTarget = 75.0
 	else:
-		wheelAngleTarget = 0
+		wheelAngleTarget = -75.0
 	pass
+	
+func onLine() -> bool:
+	if color_ray.is_colliding():
+		if color_ray.get_collider().name == "parcoursBody":
+			return true
+		return false
+	return false
