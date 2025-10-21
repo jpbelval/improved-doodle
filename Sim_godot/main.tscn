@@ -96,9 +96,9 @@ script = ExtResource("6_017ts")
 script = SubResource("GDScript_d2gei")
 
 [node name="Floor" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.053, -0.25, -0.027)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6522002, -0.25, -2.9693828)
 use_collision = true
-size = Vector3(5, 0.5, 5)
+size = Vector3(10.723389, 0.5, 10.884766)
 material = SubResource("StandardMaterial3D_y2p80")
 
 [node name="PiCar#RayCast3D" type="RayCast3D" parent="."]
@@ -168,7 +168,7 @@ radial_segments = 32
 rings = 32
 
 [node name="RigidBody3D" type="RigidBody3D" parent="."]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1.3294823, 0.01924437, 0.3021493)
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 0.5891368, 0.01924437, -2.0138674)
 gravity_scale = 0.0
 script = ExtResource("10_dg77c")
 
@@ -183,15 +183,23 @@ current = true
 transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 0, 0.029, 0)
 shape = SubResource("BoxShape3D_efxa6")
 
-[node name="ColorRay" type="RayCast3D" parent="RigidBody3D"]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0.1183454, 0.031660914, 0)
+[node name="ColorRay1" type="RayCast3D" parent="RigidBody3D"]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0.1, 0.026, -0.03)
+target_position = Vector3(0, -2, 0)
+
+[node name="ColorRay2" type="RayCast3D" parent="RigidBody3D"]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0.1, 0.026, 0)
+target_position = Vector3(0, -2, 0)
+
+[node name="ColorRay3" type="RayCast3D" parent="RigidBody3D"]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0.099999994, 0.026, 0.030358434)
 target_position = Vector3(0, -2, 0)
 
 [node name="obstacle" parent="." instance=ExtResource("13_ycdy4")]
 transform = Transform3D(0.051558107, 0, -0.19324017, 0, 0.2, 0, 0.19324017, 0, 0.051558107, -0.05921228, 0.007995229, -0.6167521)
 
 [node name="parcours" type="Node3D" parent="."]
-transform = Transform3D(0.002, 0, 0, 0, 0.002, 0, 0, 0, 0.002, 0.9862551, -0.012809634, 0)
+transform = Transform3D(0.005, 0, 0, 0, 0.005, 0, 0, 0, 0.005, -0.237, -0.049, -2.497)
 
 [node name="Parcours Picar" type="MeshInstance3D" parent="parcours"]
 mesh = SubResource("ArrayMesh_dg77c")
