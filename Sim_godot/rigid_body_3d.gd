@@ -3,22 +3,26 @@ extends Node3D
 @onready var color_ray1 = $ColorRay1
 @onready var color_ray2 = $ColorRay2
 @onready var color_ray3 = $ColorRay3
+@onready var color_ray4 = $ColorRay4
+@onready var color_ray5 = $ColorRay5
+
+@onready var axeRotation = $AxeRotation
 
 # Max constantes
 const maxAcc = 0.3 # m/s2
 const maxDec = -0.3 # m/s2
 const maxTurn = 150.0 # deg/s
-const maxAngle = 90.0 # deg
+const maxAngle = 85.0 # deg
 
 # Speed constantes
 const fullSpeed = 0.25
-const slowSpeed = 0.15
-const panicSpeed = 0.1
+const midSpeed = 0.15
+const slowSpeed = 0.1
 
 # Angle constantes
-const straightAngle = 32
-const curveAngle = 80
-const panicAngle = maxAngle
+const littleAngle = 2*maxAngle/5
+const midAngle = 5*maxAngle/6
+const bigAngle = maxAngle
 
 # Variables
 var movementSpeed
@@ -74,7 +78,15 @@ func move(delta: float) -> void:
 			wheelAngle -= maxTurn * delta
 	
 	# Turn
-	rotate_y(deg_to_rad(wheelAngle * delta * movementSpeed))
+	var angle = deg_to_rad(wheelAngle * delta * movementSpeed) 
+	var pivot_global = axeRotation.global_transform.origin
+
+	if abs(angle) > 0.0:
+		var vec = global_transform.origin - pivot_global
+		vec = vec.rotated(Vector3.UP, angle)
+		var new_origin = pivot_global + vec
+		var new_basis = global_transform.basis.rotated(Vector3.UP, angle)
+		global_transform = Transform3D(new_basis, new_origin)
 	
 	# Move
 	position.x += movementSpeed * delta * cos(deg_to_rad(rotation_degrees.y))
@@ -85,42 +97,40 @@ func lineFollower(delta: float) -> void:
 	match state:
 		0: # Follow Line
 			var detection = onLine()
-			print(detection)
 			# The line as to be on the right side of the car
-			# [1, 1, 1] -> Go little left and full speed
-			if detection[0] && detection[1] && detection[2]:
-				wheelAngleTarget = -straightAngle
+			# Little left and full speed
+			if detection[2]:
+				wheelAngleTarget = littleAngle
 				speedTarget = fullSpeed
 				lastDirection = 0
-			# [0, 0, 0] -> Depend on last direction and slow down
-			elif !detection[0] && !detection[1] && !detection[2]:
-				speedTarget = panicSpeed
-			# [0, 0, 1] -> Go right and slow down
-			elif !detection[0] && !detection[1] && detection[2]:
-				wheelAngleTarget = -curveAngle
-				speedTarget = slowSpeed
-				lastDirection = 1
-			# [0, 1, 0] -> Go little left and full speed
-			elif !detection[0] && detection[1] && !detection[2]:
-				wheelAngleTarget = straightAngle
+			# Little left and full speed
+			elif detection[1]:
+				wheelAngleTarget = littleAngle
 				speedTarget = fullSpeed
 				lastDirection = 0
-			# [0, 1, 1] -> Go little right and full speed
-			elif !detection[0] && detection[1] && detection[2]:
-				wheelAngleTarget = -straightAngle
+			# Little right and full speed
+			elif detection[3]:
+				wheelAngleTarget = -littleAngle
 				speedTarget = fullSpeed
 				lastDirection = 1
-			# [1, 0, 0] -> Go left and slow down
-			elif detection[0] && !detection[1] && !detection[2]:
-				wheelAngleTarget = curveAngle
+			# Mid to big left and full speed
+			elif detection[0]:
+				wheelAngleTarget = midAngle
+				speedTarget = midSpeed
+				lastDirection = 0
+			# Mid to big right and full speed
+			elif detection[4]:
+				wheelAngleTarget = -midAngle
+				speedTarget = midSpeed
+				lastDirection = 1
+			# Panic mode
+			else:
+				if !lastDirection:
+					wheelAngleTarget = bigAngle
+				else:
+					wheelAngleTarget = -bigAngle
 				speedTarget = slowSpeed
-				lastDirection = 0
-			# [1, 1, 0] -> Go little left and full speed
-			elif detection[0] && detection[1] && !detection[2]:
-				wheelAngleTarget = straightAngle
-				speedTarget = fullSpeed
-				lastDirection = 0
-		
+			print(detection)
 		2: # Obstacle detected
 			var i = 0
 		3: # Go arround
@@ -132,7 +142,7 @@ func lineFollower(delta: float) -> void:
 	pass
 	
 func onLine() -> Array:
-	var detection = [0, 0, 0]
+	var detection = [0, 0, 0, 0, 0]
 	if color_ray1.is_colliding():
 		if color_ray1.get_collider().name == "parcoursBody":
 			detection[0] = 1
@@ -142,4 +152,10 @@ func onLine() -> Array:
 	if color_ray3.is_colliding():
 		if color_ray3.get_collider().name == "parcoursBody":
 			detection[2] = 1
+	if color_ray4.is_colliding():
+		if color_ray4.get_collider().name == "parcoursBody":
+			detection[3] = 1
+	if color_ray5.is_colliding():
+		if color_ray5.get_collider().name == "parcoursBody":
+			detection[4] = 1
 	return detection

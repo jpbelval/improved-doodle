@@ -168,7 +168,7 @@ radial_segments = 32
 rings = 32
 
 [node name="RigidBody3D" type="RigidBody3D" parent="."]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 0.5891368, 0.01924437, -2.0138674)
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 0.63784456, 0.01924437, -2.0138674)
 gravity_scale = 0.0
 script = ExtResource("10_dg77c")
 
@@ -186,14 +186,30 @@ shape = SubResource("BoxShape3D_efxa6")
 [node name="ColorRay1" type="RayCast3D" parent="RigidBody3D"]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0.1, 0.026, -0.03)
 target_position = Vector3(0, -2, 0)
+debug_shape_thickness = 1
 
 [node name="ColorRay2" type="RayCast3D" parent="RigidBody3D"]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0.1, 0.026, 0)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0.099999964, 0.026000002, -0.015000001)
 target_position = Vector3(0, -2, 0)
+debug_shape_thickness = 1
 
 [node name="ColorRay3" type="RayCast3D" parent="RigidBody3D"]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0.099999994, 0.026, 0.030358434)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0.1, 0.026, 0)
 target_position = Vector3(0, -2, 0)
+debug_shape_thickness = 1
+
+[node name="ColorRay4" type="RayCast3D" parent="RigidBody3D"]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0.1, 0.026, 0.015)
+target_position = Vector3(0, -2, 0)
+debug_shape_thickness = 1
+
+[node name="ColorRay5" type="RayCast3D" parent="RigidBody3D"]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0.099999964, 0.026000002, 0.030358434)
+target_position = Vector3(0, -2, 0)
+debug_shape_thickness = 1
+
+[node name="AxeRotation" type="Node3D" parent="RigidBody3D"]
+transform = Transform3D(1.1924744e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924744e-08, -0.064816475, 0.018200265, 0)
 
 [node name="obstacle" parent="." instance=ExtResource("13_ycdy4")]
 transform = Transform3D(0.051558107, 0, -0.19324017, 0, 0.2, 0, 0.19324017, 0, 0.051558107, -0.05921228, 0.007995229, -0.6167521)
