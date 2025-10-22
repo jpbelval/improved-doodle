@@ -77,8 +77,13 @@ func move(delta: float) -> void:
 	rotate_y(deg_to_rad(wheelAngle * delta * movementSpeed))
 	
 	# Move
-	position.x += movementSpeed * delta * cos(deg_to_rad(rotation_degrees.y))
-	position.z += movementSpeed * delta * -sin(deg_to_rad(rotation_degrees.y))
+	#position.x += movementSpeed * delta * cos(deg_to_rad(rotation_degrees.y))
+	#position.z += movementSpeed * delta * -sin(deg_to_rad(rotation_degrees.y))
+	var forward = Vector3(1, 0, 0)  # En Godot, l’axe Z négatif est l’avant
+	var local_movement = forward * movementSpeed * delta
+
+	# Déplacer le véhicule selon sa direction actuelle
+	translate(local_movement)
 	pass
 	
 func lineFollower(delta: float) -> void:
