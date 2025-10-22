@@ -6,10 +6,8 @@
 [ext_resource type="Script" uid="uid://ohex7sfx3l0p" path="res://scripts/fsm/NetworkWaitingState.gd" id="4_s7v0d"]
 [ext_resource type="Script" uid="uid://bxh02m00uaty3" path="res://scripts/fsm/NetworkConnectingState.gd" id="5_itktg"]
 [ext_resource type="Script" uid="uid://bc4g0fv1b3qge" path="res://scripts/fsm/NetworkProcessState.gd" id="6_017ts"]
-[ext_resource type="Script" uid="uid://bmnhtnr23kll1" path="res://bille.gd" id="8_5vw27"]
-[ext_resource type="Script" uid="uid://bvg11h2cldivg" path="res://csg_box_3d.gd" id="8_kek77"]
 [ext_resource type="PackedScene" uid="uid://xroxh5wjbwp6" path="res://line_follower_sensor.tscn" id="9_a0528"]
-[ext_resource type="Script" uid="uid://bn1m8ev8kjng0" path="res://rigid_body_3d.gd" id="10_dg77c"]
+[ext_resource type="Script" uid="uid://bn1m8ev8kjng0" path="res://scripts/rigid_body_3d.gd" id="10_dg77c"]
 [ext_resource type="PackedScene" uid="uid://d1l6lr3xd6jbx" path="res://assets/voiture_mk2.blend" id="10_efxa6"]
 [ext_resource type="PackedScene" uid="uid://dw8264gchc35g" path="res://assets/obstacle.blend" id="13_ycdy4"]
 
@@ -30,6 +28,34 @@ sky_material = SubResource("ProceduralSkyMaterial_jv41d")
 [sub_resource type="Environment" id="Environment_c8ocf"]
 background_mode = 2
 sky = SubResource("Sky_nfout")
+
+[sub_resource type="GDScript" id="GDScript_4c57u"]
+script/source = "extends CSGBox3D
+
+@export var move_speed = 0.5
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	position.z += move_speed * delta
+"
+
+[sub_resource type="GDScript" id="GDScript_efxa6"]
+script/source = "extends RigidBody3D
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+"
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_iys2i"]
 
@@ -151,12 +177,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.000003, 0.0713751, -0.61904
 visible = false
 use_collision = true
 size = Vector3(0.1, 0.1, 0.1)
-script = ExtResource("8_kek77")
+script = SubResource("GDScript_4c57u")
 
 [node name="Bille" type="RigidBody3D" parent="."]
 transform = Transform3D(1, 0, -4.47035e-08, 0, 1, 0, 4.47035e-08, 0, 1, 1.99787, 0.10309596, -0.300465)
 mass = 0.1
-script = ExtResource("8_5vw27")
+script = SubResource("GDScript_efxa6")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Bille"]
 transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, -0.033037364, 0)
