@@ -48,7 +48,7 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	lineFollower(delta)
+	stateMachine(delta)
 	move(delta)
 	pass
 	
@@ -93,7 +93,7 @@ func move(delta: float) -> void:
 	position.z += movementSpeed * delta * -sin(deg_to_rad(rotation_degrees.y))
 	pass
 	
-func lineFollower(delta: float) -> void:
+func stateMachine(delta: float) -> void:
 	match state:
 		0: # Follow Line
 			var detection = onLine()
@@ -159,3 +159,8 @@ func onLine() -> Array:
 		if color_ray5.get_collider().name == "parcoursBody":
 			detection[4] = 1
 	return detection
+	
+func lineFollower() -> void:
+	# [0, 0, 1, 1, 1] -> target
+	# [0, 0, 0, 1, 1] -> target
+	pass
