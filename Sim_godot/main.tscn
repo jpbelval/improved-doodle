@@ -164,7 +164,7 @@ shape = SubResource("ConcavePolygonShape3D_dg77c")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.11698991, 0.099248156, -2.236196)
 
 [node name="voiture" parent="." instance=ExtResource("8_kek77")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.12036908, 0.0113022365, -2.1597812)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.12086463, 0.0113022365, -2.1595578)
 
 [connection signal="toggled" from="GridContainer/CheckBox" to="." method="_on_check_box_toggled"]
 [connection signal="pressed" from="GridContainer/btn_Connect" to="." method="_on_connect_pressed"]

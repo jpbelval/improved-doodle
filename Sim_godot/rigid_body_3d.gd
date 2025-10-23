@@ -9,19 +9,19 @@ extends Node3D
 @onready var axeRotation = $AxeRotation
 
 # Max constantes
-const maxAcc = 0.3 # m/s2
-const maxDec = -0.3 # m/s2
-const maxTurn = 150.0 # deg/s
-const maxAngle = 85.0 # deg
+const maxAcc = 0.1 # m/s2
+const maxWheelSpeed = 30.0 # deg/s
+const maxAngle = 40.0 # deg
+const maxSpeed = 0.1
 
 # Speed constantes
-const fullSpeed = 0.15
-const midSpeed = 0.10
-const slowSpeed = 0.07
+const fullSpeed = maxSpeed
+const midSpeed = 5*maxSpeed/8
+const slowSpeed = maxSpeed/8
 
 # Angle constantes
-const littleAngle = 2*maxAngle/5
-const midAngle = 5*maxAngle/6
+const littleAngle = maxAngle/8
+const midAngle = 5*maxAngle/8
 const bigAngle = maxAngle
 
 # Variables
@@ -60,34 +60,32 @@ func move(delta: float) -> void:
 		else:
 			movementSpeed += maxAcc * delta
 	elif movementSpeed > speedTarget:
-		if movementSpeed + maxDec * delta < speedTarget:
+		if movementSpeed - maxAcc * delta < speedTarget:
 			movementSpeed = speedTarget
 		else:
-			movementSpeed += maxDec * delta
+			movementSpeed -= maxAcc * delta
 	
 	# Wheel angle update
 	if wheelAngle < wheelAngleTarget:
-		if wheelAngle + maxTurn * delta > wheelAngleTarget:
+		if wheelAngle + maxWheelSpeed * delta > wheelAngleTarget:
 			wheelAngle = wheelAngleTarget
 		else:
-			wheelAngle += maxTurn * delta
+			wheelAngle += maxWheelSpeed * delta
 	elif wheelAngle > wheelAngleTarget:
-		if wheelAngle - maxTurn * delta < wheelAngleTarget:
+		if wheelAngle - maxWheelSpeed * delta < wheelAngleTarget:
 			wheelAngle = wheelAngleTarget
 		else:
-			wheelAngle -= maxTurn * delta
+			wheelAngle -= maxWheelSpeed * delta
 	
-	# Turn
-	var angle = deg_to_rad(wheelAngle * delta * movementSpeed) 
+	var L = global_position.distance_to(axeRotation.global_position)
+	var rotationAngle = (movementSpeed * delta) * tan(deg_to_rad(wheelAngle)) / L
 	var pivot_global = axeRotation.global_transform.origin
 
-	if abs(angle) > 0.0:
-		var vec = global_transform.origin - pivot_global
-		vec = vec.rotated(Vector3.UP, angle)
-		global_transform = Transform3D(global_transform.basis.rotated(Vector3.UP, angle), pivot_global + vec)
-	
-	# Move
-	translate(Vector3(1, 0, 0) * movementSpeed * delta)
+	var vec = global_transform.origin - pivot_global
+	vec = vec.rotated(Vector3.UP, rotationAngle)
+	global_transform = Transform3D(global_transform.basis.rotated(Vector3.UP, rotationAngle), pivot_global + vec)
+
+	translate(Vector3(1, 0, 0) * movementSpeed * cos(deg_to_rad(wheelAngle)) * delta)
 	pass
 	
 func stateMachine(delta: float) -> void:
@@ -124,16 +122,16 @@ func onLine() -> Array:
 	return detection
 	
 func lineFollower() -> void:
-	# [0, 0, 1, 1, 1] -> target
-	# [0, 0, 0, 1, 1] -> target
+	# [0, 0, 1, 0, 0] -> target
+	# [0, 0, 0, 1, 0] -> target
 	var detection = onLine()
 	
 	# Basic case
-	if detection == [0, 0, 1, 1, 1]:
+	if detection == [0, 0, 1, 0, 0]:
 		wheelAngleTarget = littleAngle
 		speedTarget = fullSpeed
 		lastDirection = 0
-	elif detection == [0, 0, 0, 1, 1]:
+	elif detection == [0, 0, 0, 1, 0]:
 		wheelAngleTarget = -littleAngle
 		speedTarget = fullSpeed
 		lastDirection = 1
@@ -143,7 +141,7 @@ func lineFollower() -> void:
 		wheelAngleTarget = -bigAngle
 		speedTarget = midSpeed
 		lastDirection = 1
-	elif detection == [0, 1, 1, 1, 1] || detection == [1, 1, 1, 1, 1]:
+	elif detection == [0, 1, 0, 0, 0] || detection == [0, 1, 1, 0, 0]:
 		wheelAngleTarget = bigAngle
 		speedTarget = midSpeed
 		lastDirection = 0
