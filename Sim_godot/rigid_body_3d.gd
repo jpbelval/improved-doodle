@@ -9,20 +9,20 @@ extends Node3D
 @onready var axeRotation = $AxeRotation
 
 # Max constantes
-const maxAcc = 0.1 # m/s2
-const maxWheelSpeed = 30.0 # deg/s
-const maxAngle = 40.0 # deg
-const maxSpeed = 0.1
+const maxAngle = 38.0 # deg
+const maxSpeed = 0.07 # m/s
+const maxAcc = 0.12 # m/s2
+const maxWheelSpeed = 70.0 # deg/s
 
 # Speed constantes
 const fullSpeed = maxSpeed
-const midSpeed = 5*maxSpeed/8
-const slowSpeed = maxSpeed/8
+const midSpeed = 6*maxSpeed/8
+const slowSpeed = 5*maxSpeed/8
 
 # Angle constantes
 const littleAngle = maxAngle/8
 const midAngle = 5*maxAngle/8
-const bigAngle = maxAngle
+const bigAngle = 6*maxAngle/8
 
 # Variables
 var movementSpeed
@@ -157,4 +157,6 @@ func lineFollower() -> void:
 		else:
 			wheelAngleTarget = bigAngle
 		speedTarget = slowSpeed
+		
+	print(detection)
 	pass
