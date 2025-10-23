@@ -165,7 +165,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.11698991, 0.18661222, -2.03
 
 [node name="voiture" parent="." instance=ExtResource("8_kek77")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.12036908, 0.030972306, -2.0950046)
-script = null
 
 [connection signal="toggled" from="GridContainer/CheckBox" to="." method="_on_check_box_toggled"]
 [connection signal="pressed" from="GridContainer/btn_Connect" to="." method="_on_connect_pressed"]
