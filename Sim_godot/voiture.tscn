@@ -1,6 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://bushjgto0oxru"]
+[gd_scene load_steps=5 format=3 uid="uid://du3ehwv15ybgt"]
 
-[ext_resource type="Script" uid="uid://bn1m8ev8kjng0" path="res://scripts/rigid_body_3d.gd" id="1_hs4ok"]
+[ext_resource type="Script" path="res://scripts/rigid_body_3d.gd" id="1_hs4ok"]
 [ext_resource type="PackedScene" uid="uid://d1l6lr3xd6jbx" path="res://assets/voiture_mk2.blend" id="2_rw1m6"]
 [ext_resource type="PackedScene" uid="uid://d1snkvvda4vrh" path="res://assets/plaquette_blender_scale.blend" id="3_rw1m6"]
 
