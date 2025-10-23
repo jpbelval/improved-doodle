@@ -84,13 +84,10 @@ func move(delta: float) -> void:
 	if abs(angle) > 0.0:
 		var vec = global_transform.origin - pivot_global
 		vec = vec.rotated(Vector3.UP, angle)
-		var new_origin = pivot_global + vec
-		var new_basis = global_transform.basis.rotated(Vector3.UP, angle)
-		global_transform = Transform3D(new_basis, new_origin)
+		global_transform = Transform3D(global_transform.basis.rotated(Vector3.UP, angle), pivot_global + vec)
 	
 	# Move
-	position.x += movementSpeed * delta * cos(deg_to_rad(rotation_degrees.y))
-	position.z += movementSpeed * delta * -sin(deg_to_rad(rotation_degrees.y))
+	translate(Vector3(1, 0, 0) * movementSpeed * delta)
 	pass
 	
 func stateMachine(delta: float) -> void:
@@ -131,6 +128,7 @@ func lineFollower() -> void:
 	# [0, 0, 0, 1, 1] -> target
 	var detection = onLine()
 	
+	# Basic case
 	if detection == [0, 0, 1, 1, 1]:
 		wheelAngleTarget = littleAngle
 		speedTarget = fullSpeed
@@ -139,7 +137,8 @@ func lineFollower() -> void:
 		wheelAngleTarget = -littleAngle
 		speedTarget = fullSpeed
 		lastDirection = 1
-		
+	
+	# Curves
 	elif detection == [0, 0, 0, 0, 1]:
 		wheelAngleTarget = -bigAngle
 		speedTarget = midSpeed
@@ -148,4 +147,16 @@ func lineFollower() -> void:
 		wheelAngleTarget = bigAngle
 		speedTarget = midSpeed
 		lastDirection = 0
+		
+	# Panic mode
+	elif detection == [1, 0, 0, 0, 0] || detection == [1, 1, 0, 0, 0]:
+		wheelAngleTarget = bigAngle
+		speedTarget = slowSpeed
+		lastDirection = 0
+	else:
+		if lastDirection:
+			wheelAngleTarget = -bigAngle
+		else:
+			wheelAngleTarget = bigAngle
+		speedTarget = slowSpeed
 	pass
