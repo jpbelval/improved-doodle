@@ -157,6 +157,4 @@ func lineFollower() -> void:
 		else:
 			wheelAngleTarget = bigAngle
 		speedTarget = slowSpeed
-		
-	print(detection)
 	pass
