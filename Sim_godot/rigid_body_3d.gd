@@ -3,26 +3,22 @@ extends Node3D
 @onready var color_ray1 = $ColorRay1
 @onready var color_ray2 = $ColorRay2
 @onready var color_ray3 = $ColorRay3
-@onready var color_ray4 = $ColorRay4
-@onready var color_ray5 = $ColorRay5
-
-@onready var axeRotation = $AxeRotation
 
 # Max constantes
 const maxAcc = 0.3 # m/s2
 const maxDec = -0.3 # m/s2
 const maxTurn = 150.0 # deg/s
-const maxAngle = 85.0 # deg
+const maxAngle = 90.0 # deg
 
 # Speed constantes
-const fullSpeed = 0.25
-const midSpeed = 0.15
-const slowSpeed = 0.1
+const fullSpeed = 0.15
+const slowSpeed = 0.15
+const panicSpeed = 0.1
 
 # Angle constantes
-const littleAngle = 2*maxAngle/5
-const midAngle = 5*maxAngle/6
-const bigAngle = maxAngle
+const straightAngle = 32
+const curveAngle = 80
+const panicAngle = maxAngle
 
 # Variables
 var movementSpeed
@@ -34,23 +30,29 @@ var speedTarget
 var state # State Machine
 var lastDirection # 0 : Left, 1 : Right
 
+var is_running
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	# Private
 	movementSpeed = 0.0 # m/s
 	wheelAngle = 0.0 # deg
 	state = 0
-
+	is_running = false
+	
 	# Public
 	wheelAngleTarget = 0.0 # deg
 	speedTarget = 0.2 # m/s
-	pass # Replace with function body.
+	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	stateMachine(delta)
-	move(delta)
-	pass
+	if Input.is_action_pressed("Start_engine"):
+		is_running = true
+		
+	if is_running:
+		lineFollower(delta)
+		move(delta)
+	
 	
 func move(delta: float) -> void:
 	# Speed update
@@ -78,22 +80,58 @@ func move(delta: float) -> void:
 			wheelAngle -= maxTurn * delta
 	
 	# Turn
-	var angle = deg_to_rad(wheelAngle * delta * movementSpeed) 
-	var pivot_global = axeRotation.global_transform.origin
-
-	if abs(angle) > 0.0:
-		var vec = global_transform.origin - pivot_global
-		vec = vec.rotated(Vector3.UP, angle)
-		global_transform = Transform3D(global_transform.basis.rotated(Vector3.UP, angle), pivot_global + vec)
+	rotate_y(deg_to_rad(wheelAngle * delta * movementSpeed))
 	
 	# Move
-	translate(Vector3(1, 0, 0) * movementSpeed * delta)
+	#position.x += movementSpeed * delta * cos(deg_to_rad(rotation_degrees.y))
+	#position.z += movementSpeed * delta * -sin(deg_to_rad(rotation_degrees.y))
+	var forward = Vector3(1, 0, 0)  # En Godot, l’axe Z négatif est l’avant
+	var local_movement = forward * movementSpeed * delta
+
+	# Déplacer le véhicule selon sa direction actuelle
+	translate(local_movement)
 	pass
 	
-func stateMachine(delta: float) -> void:
+func lineFollower(delta: float) -> void:
 	match state:
 		0: # Follow Line
-			lineFollower()
+			var detection = onLine()
+			print(detection)
+			# The line as to be on the right side of the car
+			# [1, 1, 1] -> Go little left and full speed
+			if detection[0] && detection[1] && detection[2]:
+				wheelAngleTarget = -straightAngle
+				speedTarget = fullSpeed
+				lastDirection = 0
+			# [0, 0, 0] -> Depend on last direction and slow down
+			elif !detection[0] && !detection[1] && !detection[2]:
+				speedTarget = panicSpeed
+			# [0, 0, 1] -> Go right and slow down
+			elif !detection[0] && !detection[1] && detection[2]:
+				wheelAngleTarget = -curveAngle
+				speedTarget = slowSpeed
+				lastDirection = 1
+			# [0, 1, 0] -> Go little left and full speed
+			elif !detection[0] && detection[1] && !detection[2]:
+				wheelAngleTarget = straightAngle
+				speedTarget = fullSpeed
+				lastDirection = 0
+			# [0, 1, 1] -> Go little right and full speed
+			elif !detection[0] && detection[1] && detection[2]:
+				wheelAngleTarget = -straightAngle
+				speedTarget = fullSpeed
+				lastDirection = 1
+			# [1, 0, 0] -> Go left and slow down
+			elif detection[0] && !detection[1] && !detection[2]:
+				wheelAngleTarget = curveAngle
+				speedTarget = slowSpeed
+				lastDirection = 0
+			# [1, 1, 0] -> Go little left and full speed
+			elif detection[0] && detection[1] && !detection[2]:
+				wheelAngleTarget = straightAngle
+				speedTarget = fullSpeed
+				lastDirection = 0
+		
 		2: # Obstacle detected
 			var i = 0
 		3: # Go arround
@@ -105,7 +143,7 @@ func stateMachine(delta: float) -> void:
 	pass
 	
 func onLine() -> Array:
-	var detection = [0, 0, 0, 0, 0]
+	var detection = [0, 0, 0]
 	if color_ray1.is_colliding():
 		if color_ray1.get_collider().name == "parcoursBody":
 			detection[0] = 1
@@ -115,48 +153,4 @@ func onLine() -> Array:
 	if color_ray3.is_colliding():
 		if color_ray3.get_collider().name == "parcoursBody":
 			detection[2] = 1
-	if color_ray4.is_colliding():
-		if color_ray4.get_collider().name == "parcoursBody":
-			detection[3] = 1
-	if color_ray5.is_colliding():
-		if color_ray5.get_collider().name == "parcoursBody":
-			detection[4] = 1
 	return detection
-	
-func lineFollower() -> void:
-	# [0, 0, 1, 1, 1] -> target
-	# [0, 0, 0, 1, 1] -> target
-	var detection = onLine()
-	
-	# Basic case
-	if detection == [0, 0, 1, 1, 1]:
-		wheelAngleTarget = littleAngle
-		speedTarget = fullSpeed
-		lastDirection = 0
-	elif detection == [0, 0, 0, 1, 1]:
-		wheelAngleTarget = -littleAngle
-		speedTarget = fullSpeed
-		lastDirection = 1
-	
-	# Curves
-	elif detection == [0, 0, 0, 0, 1]:
-		wheelAngleTarget = -bigAngle
-		speedTarget = midSpeed
-		lastDirection = 1
-	elif detection == [0, 1, 1, 1, 1] || detection == [1, 1, 1, 1, 1]:
-		wheelAngleTarget = bigAngle
-		speedTarget = midSpeed
-		lastDirection = 0
-		
-	# Panic mode
-	elif detection == [1, 0, 0, 0, 0] || detection == [1, 1, 0, 0, 0]:
-		wheelAngleTarget = bigAngle
-		speedTarget = slowSpeed
-		lastDirection = 0
-	else:
-		if lastDirection:
-			wheelAngleTarget = -bigAngle
-		else:
-			wheelAngleTarget = bigAngle
-		speedTarget = slowSpeed
-	pass
