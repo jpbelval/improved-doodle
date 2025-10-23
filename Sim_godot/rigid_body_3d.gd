@@ -96,41 +96,7 @@ func move(delta: float) -> void:
 func stateMachine(delta: float) -> void:
 	match state:
 		0: # Follow Line
-			var detection = onLine()
-			# The line as to be on the right side of the car
-			# Little left and full speed
-			if detection[2]:
-				wheelAngleTarget = littleAngle
-				speedTarget = fullSpeed
-				lastDirection = 0
-			# Little left and full speed
-			elif detection[1]:
-				wheelAngleTarget = littleAngle
-				speedTarget = fullSpeed
-				lastDirection = 0
-			# Little right and full speed
-			elif detection[3]:
-				wheelAngleTarget = -littleAngle
-				speedTarget = fullSpeed
-				lastDirection = 1
-			# Mid to big left and full speed
-			elif detection[0]:
-				wheelAngleTarget = midAngle
-				speedTarget = midSpeed
-				lastDirection = 0
-			# Mid to big right and full speed
-			elif detection[4]:
-				wheelAngleTarget = -midAngle
-				speedTarget = midSpeed
-				lastDirection = 1
-			# Panic mode
-			else:
-				if !lastDirection:
-					wheelAngleTarget = bigAngle
-				else:
-					wheelAngleTarget = -bigAngle
-				speedTarget = slowSpeed
-			print(detection)
+			lineFollower()
 		2: # Obstacle detected
 			var i = 0
 		3: # Go arround
@@ -163,4 +129,23 @@ func onLine() -> Array:
 func lineFollower() -> void:
 	# [0, 0, 1, 1, 1] -> target
 	# [0, 0, 0, 1, 1] -> target
+	var detection = onLine()
+	
+	if detection == [0, 0, 1, 1, 1]:
+		wheelAngleTarget = littleAngle
+		speedTarget = fullSpeed
+		lastDirection = 0
+	elif detection == [0, 0, 0, 1, 1]:
+		wheelAngleTarget = -littleAngle
+		speedTarget = fullSpeed
+		lastDirection = 1
+		
+	elif detection == [0, 0, 0, 0, 1]:
+		wheelAngleTarget = -bigAngle
+		speedTarget = midSpeed
+		lastDirection = 1
+	elif detection == [0, 1, 1, 1, 1] || detection == [1, 1, 1, 1, 1]:
+		wheelAngleTarget = bigAngle
+		speedTarget = midSpeed
+		lastDirection = 0
 	pass
