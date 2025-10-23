@@ -6,8 +6,8 @@
 [ext_resource type="Script" uid="uid://ohex7sfx3l0p" path="res://scripts/fsm/NetworkWaitingState.gd" id="4_s7v0d"]
 [ext_resource type="Script" uid="uid://bxh02m00uaty3" path="res://scripts/fsm/NetworkConnectingState.gd" id="5_itktg"]
 [ext_resource type="Script" uid="uid://bc4g0fv1b3qge" path="res://scripts/fsm/NetworkProcessState.gd" id="6_017ts"]
-[ext_resource type="PackedScene" uid="uid://bushjgto0oxru" path="res://voiture.tscn" id="8_kek77"]
-[ext_resource type="PackedScene" uid="uid://cuggh33q1q1nf" path="res://Bille.tscn" id="9_4c57u"]
+[ext_resource type="PackedScene" uid="uid://du3ehwv15ybgt" path="res://voiture.tscn" id="8_kek77"]
+[ext_resource type="PackedScene" path="res://Bille.tscn" id="9_4c57u"]
 [ext_resource type="PackedScene" uid="uid://xroxh5wjbwp6" path="res://line_follower_sensor.tscn" id="9_a0528"]
 [ext_resource type="PackedScene" uid="uid://dw8264gchc35g" path="res://assets/obstacle.blend" id="13_ycdy4"]
 
@@ -148,7 +148,7 @@ size = Vector3(0.1, 0.1, 0.1)
 transform = Transform3D(0.051558107, 0, -0.19324017, 0, 0.2, 0, 0.19324017, 0, 0.051558107, -0.05921228, 0.007995229, -0.6167521)
 
 [node name="parcours" type="Node3D" parent="."]
-transform = Transform3D(0.001, 0, 0, 0, 0.001, 0, 0, 0, 0.001, -0.0568583, 0.00047033653, -2.4020164)
+transform = Transform3D(0.001, 0, 0, 0, 0.001, 0, 0, 0, 0.001, -0.057, -0.001, -2.402)
 
 [node name="Parcours Picar" type="MeshInstance3D" parent="parcours"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -8.052379, 0)
@@ -161,10 +161,10 @@ skeleton = NodePath("")
 shape = SubResource("ConcavePolygonShape3D_dg77c")
 
 [node name="Bille" parent="." instance=ExtResource("9_4c57u")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.11698991, 0.18661222, -2.0003014)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.11698991, 0.099248156, -2.236196)
 
 [node name="voiture" parent="." instance=ExtResource("8_kek77")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.12036908, 0.030972306, -2.0436425)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.12086463, 0.0113022365, -2.1595578)
 
 [connection signal="toggled" from="GridContainer/CheckBox" to="." method="_on_check_box_toggled"]
 [connection signal="pressed" from="GridContainer/btn_Connect" to="." method="_on_connect_pressed"]
