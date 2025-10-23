@@ -11,7 +11,7 @@ const maxTurn = 150.0 # deg/s
 const maxAngle = 90.0 # deg
 
 # Speed constantes
-const fullSpeed = 0.25
+const fullSpeed = 0.15
 const slowSpeed = 0.15
 const panicSpeed = 0.1
 
@@ -30,23 +30,29 @@ var speedTarget
 var state # State Machine
 var lastDirection # 0 : Left, 1 : Right
 
+var is_running
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	# Private
 	movementSpeed = 0.0 # m/s
 	wheelAngle = 0.0 # deg
 	state = 0
-
+	is_running = false
+	
 	# Public
 	wheelAngleTarget = 0.0 # deg
 	speedTarget = 0.2 # m/s
-	pass # Replace with function body.
+	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	lineFollower(delta)
-	move(delta)
-	pass
+	if Input.is_action_pressed("Start_engine"):
+		is_running = true
+		
+	if is_running:
+		lineFollower(delta)
+		move(delta)
+	
 	
 func move(delta: float) -> void:
 	# Speed update
