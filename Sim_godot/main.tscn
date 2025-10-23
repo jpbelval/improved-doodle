@@ -88,9 +88,9 @@ script = ExtResource("6_017ts")
 script = SubResource("GDScript_d2gei")
 
 [node name="Floor" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6522002, -0.25, -2.9693828)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.243356, -0.25, -3.6281962)
 use_collision = true
-size = Vector3(10.723389, 0.5, 10.884766)
+size = Vector3(18.125671, 0.5, 16.238037)
 material = SubResource("StandardMaterial3D_y2p80")
 
 [node name="PiCar#RayCast3D" type="RayCast3D" parent="."]
@@ -148,9 +148,10 @@ size = Vector3(0.1, 0.1, 0.1)
 transform = Transform3D(0.051558107, 0, -0.19324017, 0, 0.2, 0, 0.19324017, 0, 0.051558107, -0.05921228, 0.007995229, -0.6167521)
 
 [node name="parcours" type="Node3D" parent="."]
-transform = Transform3D(0.005, 0, 0, 0, 0.005, 0, 0, 0, 0.005, -0.237, -0.049, -2.497)
+transform = Transform3D(0.001, 0, 0, 0, 0.001, 0, 0, 0, 0.001, -0.0568583, 0.00047033653, -2.4020164)
 
 [node name="Parcours Picar" type="MeshInstance3D" parent="parcours"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -8.052379, 0)
 mesh = SubResource("ArrayMesh_dg77c")
 skeleton = NodePath("")
 
@@ -160,11 +161,10 @@ skeleton = NodePath("")
 shape = SubResource("ConcavePolygonShape3D_dg77c")
 
 [node name="Bille" parent="." instance=ExtResource("9_4c57u")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6176212, 0.10612427, -1.9675891)
-script = null
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.11698991, 0.18661222, -2.0003014)
 
 [node name="voiture" parent="." instance=ExtResource("8_kek77")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.62100035, 0.00046243146, -1.9644413)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.12036908, 0.030972306, -2.0436425)
 
 [connection signal="toggled" from="GridContainer/CheckBox" to="." method="_on_check_box_toggled"]
 [connection signal="pressed" from="GridContainer/btn_Connect" to="." method="_on_connect_pressed"]
