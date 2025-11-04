@@ -26,7 +26,22 @@ def filtreButter():
     gstop = 40.0
     bb, ba, bN = butter(fe, wp, ws, gpass, gstop)
     print(bN)
-    zplane(bb, ba)
+    z, p, _ = zplane(bb, ba)
+    print("Zeros:\n", np.round(z, 6))
+    print("Poles:\n", np.round(p, 6))
+
+    # ==== Transfer function coefficients ====
+    print("\nNumerator (b):", np.round(bb, 9))
+    print("Denominator (a):", np.round(ba, 9))
+
+    # ==== Generate LaTeX-style transfer function for presentation ====
+    b_terms = " + ".join([f"({b:.3e})z^{{-{i}}}" for i, b in enumerate(bb)])
+    a_terms = " + ".join([f"({a:.3e})z^{{-{i}}}" for i, a in enumerate(ba)])
+    latex_eq = (
+            r"$H(z) = \dfrac{" + b_terms + "}{" + a_terms + "}$"
+    )
+    print("\nLaTeX Transfer Function:\n")
+    print(latex_eq)
     w, h = signal.freqz(bb, ba)
     plt.figure()
     plt.plot(w, 20*np.log10(abs(h)))
@@ -43,7 +58,22 @@ def filtreCheby2():
     gstop = 40.0
     bb, ba, bN = cheby2(fe, wp, ws, gpass, gstop)
     print(bN)
-    zplane(bb, ba)
+    z, p, _ = zplane(bb, ba)
+    print("Zeros:\n", np.round(z, 6))
+    print("Poles:\n", np.round(p, 6))
+
+    # ==== Transfer function coefficients ====
+    print("\nNumerator (b):", np.round(bb, 9))
+    print("Denominator (a):", np.round(ba, 9))
+
+    # ==== Generate LaTeX-style transfer function for presentation ====
+    b_terms = " + ".join([f"({b:.3e})z^{{-{i}}}" for i, b in enumerate(bb)])
+    a_terms = " + ".join([f"({a:.3e})z^{{-{i}}}" for i, a in enumerate(ba)])
+    latex_eq = (
+            r"$H(z) = \dfrac{" + b_terms + "}{" + a_terms + "}$"
+    )
+    print("\nLaTeX Transfer Function:\n")
+    print(latex_eq)
     w, h = signal.freqz(bb, ba)
     plt.figure()
     plt.plot(w, 20*np.log10(abs(h)))
