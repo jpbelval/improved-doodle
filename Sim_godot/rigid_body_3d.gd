@@ -34,13 +34,16 @@ var speedTarget
 var state # State Machine
 var lastDirection # 0 : Left, 1 : Right
 
+var reverse
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	# Private
 	movementSpeed = 0.0 # m/s
 	wheelAngle = 0.0 # deg
 	state = 0
-
+	reverse = true
+	
 	# Public
 	wheelAngleTarget = 0.0 # deg
 	speedTarget = 0.2 # m/s
@@ -84,8 +87,9 @@ func move(delta: float) -> void:
 	var vec = global_transform.origin - pivot_global
 	vec = vec.rotated(Vector3.UP, rotationAngle)
 	global_transform = Transform3D(global_transform.basis.rotated(Vector3.UP, rotationAngle), pivot_global + vec)
-
-	translate(Vector3(1, 0, 0) * movementSpeed * cos(deg_to_rad(wheelAngle)) * delta)
+	var wheel_direction = -1 if reverse else 1	
+	
+	translate(Vector3(wheel_direction, 0, 0) * movementSpeed * cos(deg_to_rad(wheelAngle)) * delta)
 	pass
 	
 func stateMachine(delta: float) -> void:
