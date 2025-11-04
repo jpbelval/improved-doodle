@@ -41,7 +41,7 @@ var lastDirection # 0 : Left, 1 : Right
 var reverse
 
 # Avoidance state variables
-var avoidance_timer = 0.0  
+var avoidance_timer = 0.0
 var avoidance_direction = 0  # 0 = left, 1 = right - which way to dodge
 
 # Called when the node enters the scene tree for the first time.
@@ -120,7 +120,7 @@ func stateMachine(delta: float) -> void:
 			if avoidance_direction == 0:
 				wheelAngleTarget = bigAngle
 			else:
-				wheelAngleTarget =-bigAngle
+				wheelAngleTarget = -bigAngle
 			
 
 			if avoidance_timer > 2.0: 
