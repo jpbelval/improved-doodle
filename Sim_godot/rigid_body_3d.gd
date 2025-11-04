@@ -5,6 +5,7 @@ extends Node3D
 @onready var color_ray3 = $ColorRay3
 @onready var color_ray4 = $ColorRay4
 @onready var color_ray5 = $ColorRay5
+@onready var distance_sensor = $DistanceSensor
 
 @onready var axeRotation = $AxeRotation
 
@@ -24,6 +25,9 @@ const littleAngle = maxAngle/8
 const midAngle = 5*maxAngle/8
 const bigAngle = 6*maxAngle/8
 
+# Obstacle avoidance constants
+const obstacleDetectionDistance = 0.3 # meters - trigger avoidance if obstacle within this distance
+
 # Variables
 var movementSpeed
 var wheelAngle
@@ -35,6 +39,10 @@ var state # State Machine
 var lastDirection # 0 : Left, 1 : Right
 
 var reverse
+
+# Avoidance state variables
+var avoidance_timer = 0.0  
+var avoidance_direction = 0  # 0 = left, 1 = right - which way to dodge
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -96,14 +104,49 @@ func stateMachine(delta: float) -> void:
 	match state:
 		0: # Follow Line
 			lineFollower()
-		2: # Obstacle detected
-			var i = 0
-		3: # Go arround
-			var i = 0
-		4: # Find line
-			var i = 0
-		5: # Allign
-			var i = 0
+			if distance_sensor.is_colliding():
+				var distance = global_position.distance_to(distance_sensor.get_collision_point())
+				if distance < obstacleDetectionDistance:
+					state = 2 
+					avoidance_timer = 0.0
+					if wheelAngle > 0:
+						avoidance_direction = 0
+					else:
+						avoidance_direction = 1
+		2: # Avoiding maneuver
+			avoidance_timer += delta
+			speedTarget = midSpeed
+
+			if avoidance_direction == 0:
+				wheelAngleTarget = bigAngle
+			else:
+				wheelAngleTarget =-bigAngle
+			
+
+			if avoidance_timer > 2.0: 
+				state = 3
+				avoidance_timer = 0.0
+
+		3: # Dodge obstacle
+			avoidance_timer += delta
+			wheelAngleTarget = 0
+			speedTarget = maxSpeed
+			
+			if avoidance_timer > 3.0:
+				state = 4
+				avoidance_timer = 0.0
+		4: # Find line again
+			avoidance_timer += delta
+			speedTarget = midSpeed
+			# Turn back toward line (opposite direction from avoidance)
+			if avoidance_direction == 0:
+				wheelAngleTarget = -bigAngle 
+			else:
+				wheelAngleTarget = bigAngle
+
+			var detection = onLine()
+			if detection != [0, 0, 0, 0, 0]:
+				state = 0
 	pass
 	
 func onLine() -> Array:
