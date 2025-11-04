@@ -50,7 +50,7 @@ func _ready() -> void:
 	movementSpeed = 0.0 # m/s
 	wheelAngle = 0.0 # deg
 	state = 0
-	reverse = true
+	reverse = false
 	
 	# Public
 	wheelAngleTarget = 0.0 # deg
