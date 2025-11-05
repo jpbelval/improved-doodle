@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=4 uid="uid://bk5l7umgip4v5"]
+[gd_scene load_steps=21 format=4 uid="uid://bk5l7umgip4v5"]
 
 [ext_resource type="Script" uid="uid://tq58jihq45r4" path="res://scripts/main.gd" id="1_eka3w"]
 [ext_resource type="Script" uid="uid://xfwg5cs2hgt0" path="res://addons/finite_state_machine/scripts/finite_state_machine.gd" id="2_wl1fq"]
@@ -7,7 +7,7 @@
 [ext_resource type="Script" uid="uid://bxh02m00uaty3" path="res://scripts/fsm/NetworkConnectingState.gd" id="5_itktg"]
 [ext_resource type="Script" uid="uid://bc4g0fv1b3qge" path="res://scripts/fsm/NetworkProcessState.gd" id="6_017ts"]
 [ext_resource type="PackedScene" uid="uid://du3ehwv15ybgt" path="res://voiture.tscn" id="8_kek77"]
-[ext_resource type="PackedScene" path="res://Bille.tscn" id="9_4c57u"]
+[ext_resource type="PackedScene" uid="uid://cuggh33q1q1nf" path="res://Bille.tscn" id="9_4c57u"]
 [ext_resource type="PackedScene" uid="uid://xroxh5wjbwp6" path="res://line_follower_sensor.tscn" id="9_a0528"]
 [ext_resource type="PackedScene" uid="uid://dw8264gchc35g" path="res://assets/obstacle.blend" id="13_ycdy4"]
 
@@ -28,6 +28,8 @@ sky_material = SubResource("ProceduralSkyMaterial_jv41d")
 [sub_resource type="Environment" id="Environment_c8ocf"]
 background_mode = 2
 sky = SubResource("Sky_nfout")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_4c57u"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8cyg4"]
 
@@ -145,7 +147,49 @@ use_collision = true
 size = Vector3(0.1, 0.1, 0.1)
 
 [node name="obstacle" parent="." instance=ExtResource("13_ycdy4")]
-transform = Transform3D(0.051558107, 0, -0.19324017, 0, 0.2, 0, 0.19324017, 0, 0.051558107, -0.05921228, 0.007995229, -0.6167521)
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0.121074155, 0.05111615, -3.13)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="obstacle"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="obstacle/StaticBody3D"]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.06, 0, 0, 0)
+shape = SubResource("BoxShape3D_4c57u")
+
+[node name="obstacle2" parent="." instance=ExtResource("13_ycdy4")]
+transform = Transform3D(-0.3301582, 0, 0.37549376, 0, 0.5, 0, -0.37549376, 0, -0.3301582, -0.57346463, 0.051697984, -3.1925704)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="obstacle2"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="obstacle2/StaticBody3D"]
+transform = Transform3D(0.20000002, 0, 0, 0, 0.20000002, 0, 0, 0, 0.060000006, 0, 0, 0)
+shape = SubResource("BoxShape3D_4c57u")
+
+[node name="obstacle3" parent="." instance=ExtResource("13_ycdy4")]
+transform = Transform3D(0.007591888, 0, -0.49994236, 0, 0.5, 0, 0.49994236, 0, 0.007591888, -0.3820572, 0.051885087, -1.8323528)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="obstacle3"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="obstacle3/StaticBody3D"]
+transform = Transform3D(0.20000002, 0, 0, 0, 0.20000002, 0, 0, 0, 0.060000006, 0, 0, 0)
+shape = SubResource("BoxShape3D_4c57u")
+
+[node name="obstacle4" parent="." instance=ExtResource("13_ycdy4")]
+transform = Transform3D(0.061869998, 0, -0.49615735, 0, 0.5, 0, 0.49615735, 0, 0.061869998, -1.0043762, 0.05109663, -1.8284662)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="obstacle4"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="obstacle4/StaticBody3D"]
+transform = Transform3D(0.20000002, 0, 0, 0, 0.20000002, 0, 0, 0, 0.060000006, 0, 0, 0)
+shape = SubResource("BoxShape3D_4c57u")
+
+[node name="obstacle5" parent="." instance=ExtResource("13_ycdy4")]
+transform = Transform3D(-2.1855694e-08, 0, 0.5, 0, 0.5, 0, -0.5, 0, -2.1855694e-08, 0.32787144, 0.050848704, -1.8213533)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="obstacle5"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="obstacle5/StaticBody3D"]
+transform = Transform3D(0.20000002, 0, 0, 0, 0.20000002, 0, 0, 0, 0.060000006, -0.0011487007, 0, 0)
+shape = SubResource("BoxShape3D_4c57u")
 
 [node name="parcours" type="Node3D" parent="."]
 transform = Transform3D(0.001, 0, 0, 0, 0.001, 0, 0, 0, 0.001, -0.057, -0.001, -2.402)
