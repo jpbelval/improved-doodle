@@ -21,6 +21,7 @@ const midSpeed = 6*maxSpeed/8
 const slowSpeed = 5*maxSpeed/8
 
 # Angle constantes
+const reverseAngle = maxAngle/12
 const littleAngle = maxAngle/8
 const midAngle = 5*maxAngle/8
 const bigAngle = 6*maxAngle/8
@@ -41,8 +42,6 @@ var speedTarget
 var state # State Machine
 var lastDirection # 0 : Left, 1 : Right
 
-var reverse
-
 # Avoidance state variables
 var avoidance_timer = 0.0
 var avoidance_direction = 0  # 0 = left, 1 = right - which way to dodge
@@ -53,7 +52,6 @@ func _ready() -> void:
 	movementSpeed = 0.0 # m/s
 	wheelAngle = 0.0 # deg
 	state = 0
-	reverse = false
 	
 	# Public
 	wheelAngleTarget = 0.0 # deg
@@ -90,11 +88,7 @@ func move(delta: float) -> void:
 			wheelAngle = wheelAngleTarget
 		else:
 			wheelAngle -= maxWheelSpeed * delta
-	
-	if reverse == true:
-		wheelAngle *= -1
 		
-	print(wheelAngle)
 	var L = global_position.distance_to(axeRotation.global_position)
 	var rotationAngle = (movementSpeed * delta) * tan(deg_to_rad(wheelAngle)) / L
 	var pivot_global = axeRotation.global_transform.origin
@@ -102,9 +96,8 @@ func move(delta: float) -> void:
 	var vec = global_transform.origin - pivot_global
 	vec = vec.rotated(Vector3.UP, rotationAngle)
 	global_transform = Transform3D(global_transform.basis.rotated(Vector3.UP, rotationAngle), pivot_global + vec)
-	var wheel_direction = -1 if reverse else 1
 	
-	translate(Vector3(wheel_direction, 0, 0) * movementSpeed * cos(deg_to_rad(wheelAngle)) * delta)
+	translate(Vector3(1, 0, 0) * movementSpeed * cos(deg_to_rad(wheelAngle)) * delta)
 	pass
 	
 func stateMachine(delta: float) -> void:
@@ -124,11 +117,10 @@ func stateMachine(delta: float) -> void:
 			else:
 				emit_signal("target_distance", 2)
 		2: # Reverse maneuver
+			reversing()
 			avoidance_timer += delta
-			reverse = true
 
-			if avoidance_timer > 3.0:
-				reverse = false
+			if avoidance_timer > 6.0:
 				state = 6
 				avoidance_timer = 0
 
@@ -187,6 +179,41 @@ func onLine() -> Array:
 			detection[4] = 1
 	return detection
 	
+func reversing() -> void:
+	var detection = onLine()
+		# Basic case
+	if detection == [0, 0, 1, 0, 0]:
+		wheelAngleTarget = -reverseAngle
+		lastDirection = 1
+	elif detection == [0, 0, 0, 1, 0]:
+		wheelAngleTarget = reverseAngle
+		lastDirection = 0
+	
+	# Curves
+	elif detection == [0, 0, 0, 0, 1]:
+		wheelAngleTarget = reverseAngle
+		lastDirection = 0
+	elif detection == [0, 1, 0, 0, 0] || detection == [0, 1, 1, 0, 0]:
+		wheelAngleTarget = -reverseAngle
+		lastDirection = 1
+		
+	# Panic mode
+	elif detection == [1, 0, 0, 0, 0] || detection == [1, 1, 0, 0, 0]:
+		wheelAngleTarget = -reverseAngle
+		lastDirection = 1
+	elif detection == [1, 1, 1, 1, 1]:
+		state = 5
+		speedTarget = 0.0
+		wheelAngleTarget = 0.0
+	else:
+		if lastDirection:
+			wheelAngleTarget = -reverseAngle
+		else:
+			wheelAngleTarget = reverseAngle
+		
+	speedTarget = -slowSpeed
+	
+
 func lineFollower() -> void:
 	# [0, 0, 1, 0, 0] -> target
 	# [0, 0, 0, 1, 0] -> target
@@ -227,4 +254,5 @@ func lineFollower() -> void:
 		else:
 			wheelAngleTarget = bigAngle
 		speedTarget = slowSpeed
+		
 	pass
