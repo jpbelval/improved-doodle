@@ -91,6 +91,10 @@ func move(delta: float) -> void:
 		else:
 			wheelAngle -= maxWheelSpeed * delta
 	
+	if reverse == true:
+		wheelAngle *= -1
+		
+	print(wheelAngle)
 	var L = global_position.distance_to(axeRotation.global_position)
 	var rotationAngle = (movementSpeed * delta) * tan(deg_to_rad(wheelAngle)) / L
 	var pivot_global = axeRotation.global_transform.origin
@@ -98,7 +102,7 @@ func move(delta: float) -> void:
 	var vec = global_transform.origin - pivot_global
 	vec = vec.rotated(Vector3.UP, rotationAngle)
 	global_transform = Transform3D(global_transform.basis.rotated(Vector3.UP, rotationAngle), pivot_global + vec)
-	var wheel_direction = -1 if reverse else 1	
+	var wheel_direction = -1 if reverse else 1
 	
 	translate(Vector3(wheel_direction, 0, 0) * movementSpeed * cos(deg_to_rad(wheelAngle)) * delta)
 	pass
@@ -119,19 +123,14 @@ func stateMachine(delta: float) -> void:
 						avoidance_direction = 1
 			else:
 				emit_signal("target_distance", 2)
-		2: # Avoiding maneuver
+		2: # Reverse maneuver
 			avoidance_timer += delta
-			speedTarget = midSpeed
+			reverse = true
 
-			if avoidance_direction == 0:
-				wheelAngleTarget = bigAngle
-			else:
-				wheelAngleTarget = -bigAngle
-			
-
-			if avoidance_timer > 2.0: 
-				state = 3
-				avoidance_timer = 0.0
+			if avoidance_timer > 3.0:
+				reverse = false
+				state = 6
+				avoidance_timer = 0
 
 		3: # Dodge obstacle
 			avoidance_timer += delta
@@ -156,6 +155,17 @@ func stateMachine(delta: float) -> void:
 		5:
 			wheelAngleTarget = 0.0
 			speedTarget = 0.0
+		6:
+			avoidance_timer += delta
+			speedTarget = midSpeed
+			if avoidance_direction == 0:
+				wheelAngleTarget = bigAngle
+			else:
+				wheelAngleTarget = -bigAngle
+
+			if avoidance_timer > 3.0: 
+				state = 3
+				avoidance_timer = 0.0
 	pass
 	
 func onLine() -> Array:
