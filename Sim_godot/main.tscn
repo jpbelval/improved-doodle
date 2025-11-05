@@ -182,15 +182,6 @@ transform = Transform3D(0.061869998, 0, -0.49615735, 0, 0.5, 0, 0.49615735, 0, 0
 transform = Transform3D(0.20000002, 0, 0, 0, 0.20000002, 0, 0, 0, 0.060000006, 0, 0, 0)
 shape = SubResource("BoxShape3D_4c57u")
 
-[node name="obstacle5" parent="." instance=ExtResource("13_ycdy4")]
-transform = Transform3D(-2.1855694e-08, 0, 0.5, 0, 0.5, 0, -0.5, 0, -2.1855694e-08, 0.32787144, 0.050848704, -1.8213533)
-
-[node name="StaticBody3D" type="StaticBody3D" parent="obstacle5"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="obstacle5/StaticBody3D"]
-transform = Transform3D(0.20000002, 0, 0, 0, 0.20000002, 0, 0, 0, 0.060000006, -0.0011487007, 0, 0)
-shape = SubResource("BoxShape3D_4c57u")
-
 [node name="parcours" type="Node3D" parent="."]
 transform = Transform3D(0.001, 0, 0, 0, 0.001, 0, 0, 0, 0.001, -0.057, -0.001, -2.402)
 
@@ -205,10 +196,10 @@ skeleton = NodePath("")
 shape = SubResource("ConcavePolygonShape3D_dg77c")
 
 [node name="Bille" parent="." instance=ExtResource("9_4c57u")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.11698991, 0.099248156, -2.236196)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5683048, 0.099248156, -1.4914346)
 
 [node name="voiture" parent="." instance=ExtResource("8_kek77")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.12086463, 0.0113022365, -2.1595578)
+transform = Transform3D(0.9953425, 0, -0.096401595, 0, 1, 0, 0.096401595, 0, 0.9953425, -1.6511166, 0.0113022365, -1.4955395)
 
 [connection signal="toggled" from="GridContainer/CheckBox" to="." method="_on_check_box_toggled"]
 [connection signal="pressed" from="GridContainer/btn_Connect" to="." method="_on_connect_pressed"]

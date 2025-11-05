@@ -147,6 +147,9 @@ func stateMachine(delta: float) -> void:
 			var detection = onLine()
 			if detection != [0, 0, 0, 0, 0]:
 				state = 0
+		5:
+			wheelAngleTarget = 0.0
+			speedTarget = 0.0
 	pass
 	
 func onLine() -> Array:
@@ -198,6 +201,10 @@ func lineFollower() -> void:
 		wheelAngleTarget = bigAngle
 		speedTarget = slowSpeed
 		lastDirection = 0
+	elif detection == [1, 1, 1, 1, 1]:
+		state = 5
+		speedTarget = 0.0
+		wheelAngleTarget = 0.0
 	else:
 		if lastDirection:
 			wheelAngleTarget = -bigAngle
