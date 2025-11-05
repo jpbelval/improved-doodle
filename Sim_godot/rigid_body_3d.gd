@@ -28,6 +28,9 @@ const bigAngle = 6*maxAngle/8
 # Obstacle avoidance constants
 const obstacleDetectionDistance = 0.3 # meters - trigger avoidance if obstacle within this distance
 
+#Signal
+signal target_distance(distance: float)
+
 # Variables
 var movementSpeed
 var wheelAngle
@@ -106,6 +109,7 @@ func stateMachine(delta: float) -> void:
 			lineFollower()
 			if distance_sensor.is_colliding():
 				var distance = global_position.distance_to(distance_sensor.get_collision_point())
+				emit_signal("target_distance", distance)
 				if distance < obstacleDetectionDistance:
 					state = 2 
 					avoidance_timer = 0.0
@@ -113,6 +117,8 @@ func stateMachine(delta: float) -> void:
 						avoidance_direction = 0
 					else:
 						avoidance_direction = 1
+			else:
+				emit_signal("target_distance", 2)
 		2: # Avoiding maneuver
 			avoidance_timer += delta
 			speedTarget = midSpeed
