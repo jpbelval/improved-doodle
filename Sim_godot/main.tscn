@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=4 uid="uid://bk5l7umgip4v5"]
+[gd_scene load_steps=26 format=4 uid="uid://bk5l7umgip4v5"]
 
 [ext_resource type="Script" uid="uid://tq58jihq45r4" path="res://scripts/main.gd" id="1_eka3w"]
 [ext_resource type="Script" uid="uid://xfwg5cs2hgt0" path="res://addons/finite_state_machine/scripts/finite_state_machine.gd" id="2_wl1fq"]
@@ -6,10 +6,16 @@
 [ext_resource type="Script" uid="uid://ohex7sfx3l0p" path="res://scripts/fsm/NetworkWaitingState.gd" id="4_s7v0d"]
 [ext_resource type="Script" uid="uid://bxh02m00uaty3" path="res://scripts/fsm/NetworkConnectingState.gd" id="5_itktg"]
 [ext_resource type="Script" uid="uid://bc4g0fv1b3qge" path="res://scripts/fsm/NetworkProcessState.gd" id="6_017ts"]
+[ext_resource type="Texture2D" uid="uid://c4hk100nuv24q" path="res://assets/img/gray-circle.png" id="8_efxa6"]
 [ext_resource type="PackedScene" uid="uid://du3ehwv15ybgt" path="res://voiture.tscn" id="8_kek77"]
-[ext_resource type="PackedScene" path="res://Bille.tscn" id="9_4c57u"]
+[ext_resource type="PackedScene" uid="uid://cuggh33q1q1nf" path="res://Bille.tscn" id="9_4c57u"]
 [ext_resource type="PackedScene" uid="uid://xroxh5wjbwp6" path="res://line_follower_sensor.tscn" id="9_a0528"]
+[ext_resource type="Script" uid="uid://dner2n2015f4k" path="res://scripts/color_ray/img_capteur_1.gd" id="11_efxa6"]
+[ext_resource type="Script" uid="uid://xm28opcx1ph7" path="res://scripts/color_ray/img_capteur_2.gd" id="12_dg77c"]
+[ext_resource type="Script" uid="uid://d0f6u88pp4cr4" path="res://scripts/color_ray/img_capteur_3.gd" id="13_w48qg"]
 [ext_resource type="PackedScene" uid="uid://dw8264gchc35g" path="res://assets/obstacle.blend" id="13_ycdy4"]
+[ext_resource type="Script" uid="uid://cn47ohhy2m3tu" path="res://scripts/color_ray/img_capteur_4.gd" id="14_w48qg"]
+[ext_resource type="Script" uid="uid://bhaj8b1ajwg6m" path="res://scripts/color_ray/img_capteur_5.gd" id="15_vivmo"]
 
 [sub_resource type="GDScript" id="GDScript_d2gei"]
 
@@ -165,6 +171,64 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.11698991, 0.099248156, -2.2
 
 [node name="voiture" parent="." instance=ExtResource("8_kek77")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.12086463, 0.0113022365, -2.1595578)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="img_capteur1" type="TextureRect" parent="CanvasLayer/Control"]
+layout_mode = 0
+offset_left = 772.5
+offset_top = 890.0
+offset_right = 847.5
+offset_bottom = 965.0
+texture = ExtResource("8_efxa6")
+expand_mode = 2
+script = ExtResource("11_efxa6")
+
+[node name="img_capteur2" type="TextureRect" parent="CanvasLayer/Control"]
+layout_mode = 0
+offset_left = 847.5
+offset_top = 890.0
+offset_right = 922.5
+offset_bottom = 965.0
+texture = ExtResource("8_efxa6")
+expand_mode = 2
+script = ExtResource("12_dg77c")
+
+[node name="img_capteur3" type="TextureRect" parent="CanvasLayer/Control"]
+layout_mode = 0
+offset_left = 922.0
+offset_top = 890.0
+offset_right = 997.0
+offset_bottom = 965.0
+texture = ExtResource("8_efxa6")
+expand_mode = 2
+script = ExtResource("13_w48qg")
+
+[node name="img_capteur4" type="TextureRect" parent="CanvasLayer/Control"]
+layout_mode = 0
+offset_left = 997.5
+offset_top = 890.0
+offset_right = 1072.5
+offset_bottom = 965.0
+texture = ExtResource("8_efxa6")
+expand_mode = 2
+script = ExtResource("14_w48qg")
+
+[node name="img_capteur5" type="TextureRect" parent="CanvasLayer/Control"]
+layout_mode = 0
+offset_left = 1072.5
+offset_top = 890.0
+offset_right = 1147.5
+offset_bottom = 965.0
+texture = ExtResource("8_efxa6")
+expand_mode = 2
+script = ExtResource("15_vivmo")
 
 [connection signal="toggled" from="GridContainer/CheckBox" to="." method="_on_check_box_toggled"]
 [connection signal="pressed" from="GridContainer/btn_Connect" to="." method="_on_connect_pressed"]
