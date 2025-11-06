@@ -22,7 +22,7 @@
 [sub_resource type="GDScript" id="GDScript_d2gei"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y2p80"]
-albedo_color = Color(0, 0, 0.3529412, 1)
+albedo_color = Color(0.09713241, 0.12564635, 0.20921803, 1)
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_jv41d"]
 sky_top_color = Color(0.635294, 0.756863, 0.901961, 1)
@@ -121,8 +121,8 @@ environment = SubResource("Environment_c8ocf")
 
 [node name="GridContainer" type="GridContainer" parent="."]
 offset_left = 3.0
-offset_right = 320.0
-offset_bottom = 89.0
+offset_right = 425.0
+offset_bottom = 159.0
 columns = 2
 
 [node name="CheckBox" type="CheckBox" parent="GridContainer"]
@@ -205,12 +205,13 @@ skeleton = NodePath("")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="parcours/Parcours Picar/parcoursBody"]
 shape = SubResource("ConcavePolygonShape3D_dg77c")
+debug_color = Color(0.8964797, 0.00020118654, 0.7765917, 0.41960785)
 
 [node name="Bille" parent="." instance=ExtResource("9_4c57u")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5683048, 0.099248156, -1.4914346)
 
 [node name="voiture" parent="." instance=ExtResource("8_kek77")]
-transform = Transform3D(0.9953425, 0, -0.096401595, 0, 1, 0, 0.096401595, 0, 0.9953425, -1.6511166, 0.0113022365, -1.4955395)
+transform = Transform3D(0.9953425, 0, -0.096401595, 0, 1, 0, 0.096401595, 0, 0.9953425, 0.08659935, 0.0113022365, -1.4955395)
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -280,18 +281,46 @@ theme_override_font_sizes/font_size = 32
 text = "Distance: NA"
 script = ExtResource("17_yaehf")
 
-[node name="parcours_2" parent="." instance=ExtResource("18_074og")]
-transform = Transform3D(-8.7422775e-10, 0, -0.02, 0, 0.02, 0, 0.02, 0, -8.7422775e-10, -1.6524916, 0.01, -1.4808048)
+[node name="ItemList" type="ItemList" parent="."]
+offset_left = 1630.0
+offset_top = 15.0
+offset_right = 1883.0
+offset_bottom = 53.0
+item_count = 2
+item_0/text = "Principal"
+item_1/text = "Alternatif"
 
-[node name="Plane2" type="MeshInstance3D" parent="parcours_2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.121414654, 0.050590165)
-skeleton = NodePath("")
+[node name="LABEL" type="Label" parent="."]
+anchors_preset = -1
+anchor_left = -0.72700006
+anchor_right = -0.72700006
+anchor_bottom = 0.158
+offset_left = 2793.84
+offset_top = 20.0
+offset_right = 2919.84
+offset_bottom = -124.640015
+text = "Parcours choisi: "
 
-[node name="parcoursBody" type="StaticBody3D" parent="parcours_2/Plane2"]
+[node name="PickedParcours" type="Label" parent="."]
+anchors_preset = -1
+anchor_left = -0.72700006
+anchor_right = -0.72700006
+anchor_bottom = 0.158
+offset_left = 2930.84
+offset_top = 20.0
+offset_right = 3007.84
+offset_bottom = -124.640015
+text = "Principal"
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="parcours_2/Plane2/parcoursBody"]
-shape = SubResource("ConcavePolygonShape3D_cegan")
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.6227605, 0.7824126, 0, -0.7824126, 0.6227605, -0.9003732, 1.052769, -0.093524635)
+light_energy = 2.715
+light_angular_distance = 25.1
+shadow_enabled = true
+shadow_bias = 0.535
 
 [connection signal="toggled" from="GridContainer/CheckBox" to="." method="_on_check_box_toggled"]
 [connection signal="pressed" from="GridContainer/btn_Connect" to="." method="_on_connect_pressed"]
 [connection signal="pressed" from="GridContainer/btn_Quit" to="." method="_on_quit_pressed"]
+[connection signal="item_selected" from="ItemList" to="." method="_on_item_list_item_selected"]
+[connection signal="ready" from="ItemList" to="." method="_on_item_list_ready"]
