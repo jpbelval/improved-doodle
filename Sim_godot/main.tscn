@@ -172,7 +172,7 @@ transform = Transform3D(0.20000002, 0, 0, 0, 0.20000002, 0, 0, 0, 0.060000006, 0
 shape = SubResource("BoxShape3D_4c57u")
 
 [node name="obstacle3" parent="." instance=ExtResource("13_ycdy4")]
-transform = Transform3D(0.007591888, 0, -0.49994236, 0, 0.5, 0, 0.49994236, 0, 0.007591888, -0.67295575, 0.051885087, -1.4913814)
+transform = Transform3D(0.0043545393, 0, -0.49998108, 0, 0.5, 0, 0.49998108, 0, 0.0043545393, -0.67295575, 0.051885087, -1.4913814)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="obstacle3"]
 
@@ -207,7 +207,7 @@ debug_color = Color(0.8964797, 0.00020118654, 0.7765917, 0.41960785)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5683048, 0.099248156, -1.4914346)
 
 [node name="voiture" parent="." instance=ExtResource("8_kek77")]
-transform = Transform3D(0.9953425, 0, -0.096401595, 0, 1, 0, 0.096401595, 0, 0.9953425, 0.08659935, 0.0113022365, -1.4955395)
+transform = Transform3D(0.99999225, 0, -0.0039618164, 0, 1, 0, 0.0039618164, 0, 0.99999225, -1.6460732, 0.0113022365, -1.4949931)
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -273,6 +273,7 @@ offset_left = 851.0
 offset_top = 838.0
 offset_right = 1055.0
 offset_bottom = 883.0
+theme_override_colors/font_color = Color(0.07058824, 1, 1, 1)
 theme_override_font_sizes/font_size = 32
 text = "Distance: NA"
 script = ExtResource("17_yaehf")
