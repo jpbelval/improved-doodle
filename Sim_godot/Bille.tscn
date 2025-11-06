@@ -1,6 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://cuggh33q1q1nf"]
+[gd_scene load_steps=4 format=3 uid="uid://cuggh33q1q1nf"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_j3c87"]
+albedo_color = Color(1, 0.039215688, 0.03137255, 1)
 
 [sub_resource type="SphereMesh" id="SphereMesh_j3c87"]
+material = SubResource("StandardMaterial3D_j3c87")
 radius = 0.01
 height = 0.02
 

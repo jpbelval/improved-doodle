@@ -80,7 +80,7 @@ script = ExtResource("4_jk6xw")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.083528675, 0.023355193, -3.6511543e-09)
 
 [node name="DistanceSensor" type="RayCast3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15, 0.025, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.13947144, 0.025, -4.6021809e-10)
 target_position = Vector3(1, 0, 0)
 
 [editable path="plaquette_blender_scale"]

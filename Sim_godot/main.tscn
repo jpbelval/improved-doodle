@@ -274,6 +274,7 @@ offset_left = 851.0
 offset_top = 838.0
 offset_right = 1055.0
 offset_bottom = 883.0
+theme_override_colors/font_color = Color(0.07058824, 1, 1, 1)
 theme_override_font_sizes/font_size = 32
 text = "Distance: NA"
 script = ExtResource("17_yaehf")
