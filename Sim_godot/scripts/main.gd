@@ -36,3 +36,8 @@ func _on_check_box_toggled(toggled_on):
 	if toggled_on:
 		$GridContainer/le_IpAdress.text = "127.0.0.1"
 		get_node("NetworkFSM").current_state = $NetworkFSM/NetworkInitState
+
+
+func _on_item_list_item_selected(index: int) -> void:
+	var selected_text = $ItemList.get_item_text(index)
+	$PickedParcours.text = selected_text
