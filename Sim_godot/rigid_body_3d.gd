@@ -171,7 +171,7 @@ func stateMachine(delta: float) -> void:
 func onLine() -> Array:
 	var detection = [0, 0, 0, 0, 0]
 	if color_ray1.is_colliding():
-		if color_ray1.get_collider().name == "parcoursBody":
+		if color_ray1.get_collider().name == "parcoursBody" || color_ray1.get_collider().name == "parcoursBody" :
 			detection[0] = 1
 	if color_ray2.is_colliding():
 		if color_ray2.get_collider().name == "parcoursBody":
