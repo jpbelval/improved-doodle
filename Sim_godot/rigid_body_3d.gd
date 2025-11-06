@@ -56,13 +56,13 @@ func _ready() -> void:
 	# Public
 	wheelAngleTarget = 0.0 # deg
 	speedTarget = 0.2 # m/s
-	pass # Replace with function body.
+	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	stateMachine(delta)
 	move(delta)
-	pass
+	
 	
 func move(delta: float) -> void:
 	# Speed update
@@ -98,7 +98,7 @@ func move(delta: float) -> void:
 	global_transform = Transform3D(global_transform.basis.rotated(Vector3.UP, rotationAngle), pivot_global + vec)
 	
 	translate(Vector3(1, 0, 0) * movementSpeed * cos(deg_to_rad(wheelAngle)) * delta)
-	pass
+	
 	
 func stateMachine(delta: float) -> void:
 	match state:
@@ -121,44 +121,58 @@ func stateMachine(delta: float) -> void:
 			avoidance_timer += delta
 
 			if avoidance_timer > 6.0:
-				state = 6
+				state = 3
 				avoidance_timer = 0
+				speedTarget = fullSpeed
+				setWheelAngle(avoidance_direction, bigAngle)
 
 		3: # Dodge obstacle
 			avoidance_timer += delta
-			wheelAngleTarget = 0
-			speedTarget = maxSpeed
+			if distance_sensor.is_colliding():
+				var distance = global_position.distance_to(distance_sensor.get_collision_point())
+				emit_signal("target_distance", distance)
+				if distance < obstacleDetectionDistance:
+					state = 2
 			
-			if avoidance_timer > 3.0:
+			if avoidance_timer > 1.5:
+				wheelAngleTarget = 0.0 
+			if avoidance_timer > 6.0:
 				state = 4
 				avoidance_timer = 0.0
+				setInvWheelAngle(avoidance_direction, midAngle)
+				
 		4: # Find line again
 			avoidance_timer += delta
-			speedTarget = midSpeed
-			# Turn back toward line (opposite direction from avoidance)
-			if avoidance_direction == 0:
-				wheelAngleTarget = -bigAngle 
-			else:
-				wheelAngleTarget = bigAngle
-
+			if distance_sensor.is_colliding():
+				var distance = global_position.distance_to(distance_sensor.get_collision_point())
+				emit_signal("target_distance", distance)
+				if distance < obstacleDetectionDistance:
+					state = 2
 			var detection = onLine()
 			if detection != [0, 0, 0, 0, 0]:
 				state = 0
+			if avoidance_timer > 1.25:
+				wheelAngleTarget = 0.0 
+				state = 6
+				avoidance_timer = 0.0
+			
 		5:
 			wheelAngleTarget = 0.0
 			speedTarget = 0.0
 		6:
 			avoidance_timer += delta
 			speedTarget = midSpeed
-			if avoidance_direction == 0:
-				wheelAngleTarget = bigAngle
-			else:
-				wheelAngleTarget = -bigAngle
+			if avoidance_timer > 5:
+				setInvWheelAngle(avoidance_direction, midAngle)
+			if distance_sensor.is_colliding():
+				var distance = global_position.distance_to(distance_sensor.get_collision_point())
+				emit_signal("target_distance", distance)
+				if distance < obstacleDetectionDistance:
+					state = 2
+			var detection = onLine()
+			if detection != [0, 0, 0, 0, 0]:
+				state = 0
 
-			if avoidance_timer > 3.0: 
-				state = 3
-				avoidance_timer = 0.0
-	pass
 	
 func onLine() -> Array:
 	var detection = [0, 0, 0, 0, 0]
@@ -255,4 +269,18 @@ func lineFollower() -> void:
 			wheelAngleTarget = bigAngle
 		speedTarget = slowSpeed
 		
-	pass
+	
+
+
+func setWheelAngle(direction: int, angle: float)->void:
+	if direction:
+		wheelAngleTarget = -angle
+	else:
+		wheelAngleTarget = angle
+
+
+func setInvWheelAngle(direction: int, angle: float)->void:
+	if direction:
+		wheelAngleTarget = angle
+	else:
+		wheelAngleTarget = -angle
