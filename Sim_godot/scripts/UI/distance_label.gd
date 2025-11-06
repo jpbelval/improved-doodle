@@ -9,7 +9,7 @@ func _ready() -> void:
 
 func _on_target_distance(distance: float):
 	if distance <= 1:
-		text = "Distance: " + str(int(distance * 1.875 * 100)) + " mm"
+		text = "Distance: " + str(int(distance * 100)) + " mm"
 	else:
 		text = "Distance: NA"
 
