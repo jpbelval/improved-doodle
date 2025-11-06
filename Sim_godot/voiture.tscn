@@ -39,6 +39,7 @@ current = true
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.006061204, 0.022276849, -0.00046539278)
 shape = SubResource("BoxShape3D_rw1m6")
+disabled = true
 
 [node name="plaquette_blender_scale" parent="." instance=ExtResource("3_rw1m6")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -0.007921237, 0.14461342, -3.4624822e-10)
