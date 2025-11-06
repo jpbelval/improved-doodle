@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=4 uid="uid://bk5l7umgip4v5"]
+[gd_scene load_steps=29 format=4 uid="uid://bk5l7umgip4v5"]
 
 [ext_resource type="Script" uid="uid://tq58jihq45r4" path="res://scripts/main.gd" id="1_eka3w"]
 [ext_resource type="Script" uid="uid://xfwg5cs2hgt0" path="res://addons/finite_state_machine/scripts/finite_state_machine.gd" id="2_wl1fq"]
@@ -17,6 +17,7 @@
 [ext_resource type="Script" uid="uid://cn47ohhy2m3tu" path="res://scripts/color_ray/img_capteur_4.gd" id="14_w48qg"]
 [ext_resource type="Script" uid="uid://bhaj8b1ajwg6m" path="res://scripts/color_ray/img_capteur_5.gd" id="15_vivmo"]
 [ext_resource type="Script" uid="uid://bt8b6nxq3fk8s" path="res://scripts/UI/distance_label.gd" id="17_yaehf"]
+[ext_resource type="PackedScene" uid="uid://difir3bb2pwv4" path="res://assets/parcours.blend" id="18_074og"]
 
 [sub_resource type="GDScript" id="GDScript_d2gei"]
 
@@ -154,7 +155,7 @@ use_collision = true
 size = Vector3(0.1, 0.1, 0.1)
 
 [node name="obstacle" parent="." instance=ExtResource("13_ycdy4")]
-transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0.121074155, 0.05111615, -3.13)
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -9.875417, 0.05111615, -3.13)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="obstacle"]
 
@@ -163,7 +164,7 @@ transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.06, 0, 0, 0)
 shape = SubResource("BoxShape3D_4c57u")
 
 [node name="obstacle2" parent="." instance=ExtResource("13_ycdy4")]
-transform = Transform3D(-0.3301582, 0, 0.37549376, 0, 0.5, 0, -0.37549376, 0, -0.3301582, -0.57346463, 0.051697984, -3.1925704)
+transform = Transform3D(-2.1855694e-08, 0, 0.5, 0, 0.5, 0, -0.5, 0, -2.1855694e-08, -10.011266, 0.051697984, -0.10237312)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="obstacle2"]
 
@@ -172,7 +173,7 @@ transform = Transform3D(0.20000002, 0, 0, 0, 0.20000002, 0, 0, 0, 0.060000006, 0
 shape = SubResource("BoxShape3D_4c57u")
 
 [node name="obstacle3" parent="." instance=ExtResource("13_ycdy4")]
-transform = Transform3D(0.0043545393, 0, -0.49998108, 0, 0.5, 0, 0.49998108, 0, 0.0043545393, -0.67295575, 0.051885087, -1.4913814)
+transform = Transform3D(0.007591888, 0, -0.49994236, 0, 0.5, 0, 0.49994236, 0, 0.007591888, -10.057, 0.051885087, -1.4913814)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="obstacle3"]
 
@@ -181,7 +182,7 @@ transform = Transform3D(0.20000002, 0, 0, 0, 0.20000002, 0, 0, 0, 0.060000006, 0
 shape = SubResource("BoxShape3D_4c57u")
 
 [node name="obstacle4" parent="." instance=ExtResource("13_ycdy4")]
-transform = Transform3D(0.061869998, 0, -0.49615735, 0, 0.5, 0, 0.49615735, 0, 0.061869998, -1.0043762, 0.05109663, -1.8284662)
+transform = Transform3D(0.061869998, 0, -0.49615735, 0, 0.5, 0, 0.49615735, 0, 0.061869998, -10.057, 0.05109663, -1.8284662)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="obstacle4"]
 
@@ -190,7 +191,7 @@ transform = Transform3D(0.20000002, 0, 0, 0, 0.20000002, 0, 0, 0, 0.060000006, 0
 shape = SubResource("BoxShape3D_4c57u")
 
 [node name="parcours" type="Node3D" parent="."]
-transform = Transform3D(0.001, 0, 0, 0, 0.001, 0, 0, 0, 0.001, -0.057, -0.001, -2.402)
+transform = Transform3D(0.001, 0, 0, 0, 0.001, 0, 0, 0, 0.001, -10.057, -0.001, -2.402)
 
 [node name="Parcours Picar" type="MeshInstance3D" parent="parcours"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -8.052379, 0)
@@ -204,10 +205,10 @@ shape = SubResource("ConcavePolygonShape3D_dg77c")
 debug_color = Color(0.8964797, 0.00020118654, 0.7765917, 0.41960785)
 
 [node name="Bille" parent="." instance=ExtResource("9_4c57u")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5683048, 0.099248156, -1.4914346)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.541945, 0.099248156, -0.46578515)
 
 [node name="voiture" parent="." instance=ExtResource("8_kek77")]
-transform = Transform3D(0.99999225, 0, -0.0039618164, 0, 1, 0, 0.0039618164, 0, 0.99999225, -1.6460732, 0.0113022365, -1.4949931)
+transform = Transform3D(0.9953425, 0, -0.096401595, 0, 1, 0, 0.096401595, 0, 0.9953425, -11.619167, 0.0113022365, -0.4495715)
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -309,12 +310,37 @@ offset_right = 3007.84
 offset_bottom = -124.640015
 text = "Principal"
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.6227605, 0.7824126, 0, -0.7824126, 0.6227605, -0.9003732, 1.052769, -0.093524635)
-light_energy = 2.715
-light_angular_distance = 25.1
-shadow_enabled = true
-shadow_bias = 0.535
+[node name="parcours2" parent="." instance=ExtResource("18_074og")]
+transform = Transform3D(0.001, 0, 0, 0, -0.001, 8.742278e-11, 0, -8.742278e-11, -0.001, -10.071711, 0, 0.47408295)
+
+[node name="Parcours Picar3" type="MeshInstance3D" parent="parcours2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -8.052379, 0)
+mesh = SubResource("ArrayMesh_dg77c")
+skeleton = NodePath("")
+
+[node name="parcoursBody" type="StaticBody3D" parent="parcours2/Parcours Picar3"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="parcours2/Parcours Picar3/parcoursBody"]
+shape = SubResource("ConcavePolygonShape3D_dg77c")
+debug_color = Color(0.8964797, 0.00020118654, 0.7765917, 0.41960785)
+
+[node name="obstacle5" parent="." instance=ExtResource("13_ycdy4")]
+transform = Transform3D(-2.1855694e-08, 0, 0.5, 0, 0.5, 0, -0.5, 0, -2.1855694e-08, -10.00821, 0, -0.44386932)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="obstacle5"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="obstacle5/StaticBody3D"]
+transform = Transform3D(0.20000002, 0, 0, 0, 0.20000002, 0, 0, 0, 0.060000006, 0, 0, 0)
+shape = SubResource("BoxShape3D_4c57u")
+
+[node name="obstacle6" parent="." instance=ExtResource("13_ycdy4")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -9.897839, 0, 0.949184)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="obstacle6"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="obstacle6/StaticBody3D"]
+transform = Transform3D(0.20000002, 0, 0, 0, 0.20000002, 0, 0, 0, 0.060000006, 0, 0, 0)
+shape = SubResource("BoxShape3D_4c57u")
 
 [connection signal="toggled" from="GridContainer/CheckBox" to="." method="_on_check_box_toggled"]
 [connection signal="pressed" from="GridContainer/btn_Connect" to="." method="_on_connect_pressed"]
