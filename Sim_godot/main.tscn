@@ -155,7 +155,7 @@ use_collision = true
 size = Vector3(0.1, 0.1, 0.1)
 
 [node name="obstacle" parent="." instance=ExtResource("13_ycdy4")]
-transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -9.875417, 0.05111615, -3.13)
+transform = Transform3D(-2.1855694e-08, 0, 0.5, 0, 0.5, 0, -0.5, 0, -2.1855694e-08, -11.124519, 0.05111615, -1.4960152)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="obstacle"]
 
@@ -164,7 +164,7 @@ transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.06, 0, 0, 0)
 shape = SubResource("BoxShape3D_4c57u")
 
 [node name="obstacle2" parent="." instance=ExtResource("13_ycdy4")]
-transform = Transform3D(-2.1855694e-08, 0, 0.5, 0, 0.5, 0, -0.5, 0, -2.1855694e-08, -10.011266, 0.051697984, -0.10237312)
+transform = Transform3D(-2.1855694e-08, 0, 0.5, 0, 0.5, 0, -0.5, 0, -2.1855694e-08, -10.517995, 0.051697984, -0.10237312)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="obstacle2"]
 
@@ -173,7 +173,7 @@ transform = Transform3D(0.20000002, 0, 0, 0, 0.20000002, 0, 0, 0, 0.060000006, 0
 shape = SubResource("BoxShape3D_4c57u")
 
 [node name="obstacle3" parent="." instance=ExtResource("13_ycdy4")]
-transform = Transform3D(0.007591888, 0, -0.49994236, 0, 0.5, 0, 0.49994236, 0, 0.007591888, -10.057, 0.051885087, -1.4913814)
+transform = Transform3D(0.007591888, 0, -0.49994236, 0, 0.5, 0, 0.49994236, 0, 0.007591888, -10.22561, 0.051885087, -1.4913814)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="obstacle3"]
 
@@ -182,7 +182,7 @@ transform = Transform3D(0.20000002, 0, 0, 0, 0.20000002, 0, 0, 0, 0.060000006, 0
 shape = SubResource("BoxShape3D_4c57u")
 
 [node name="obstacle4" parent="." instance=ExtResource("13_ycdy4")]
-transform = Transform3D(0.061869998, 0, -0.49615735, 0, 0.5, 0, 0.49615735, 0, 0.061869998, -10.057, 0.05109663, -1.8284662)
+transform = Transform3D(0.061869998, 0, -0.49615735, 0, 0.5, 0, 0.49615735, 0, 0.061869998, -10.678501, 0.05109663, -1.8284662)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="obstacle4"]
 
@@ -205,7 +205,7 @@ shape = SubResource("ConcavePolygonShape3D_dg77c")
 debug_color = Color(0.8964797, 0.00020118654, 0.7765917, 0.41960785)
 
 [node name="Bille" parent="." instance=ExtResource("9_4c57u")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.541945, 0.099248156, -0.46578515)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.541945, 0.099248156, -0.45016494)
 
 [node name="voiture" parent="." instance=ExtResource("8_kek77")]
 transform = Transform3D(0.9953425, 0, -0.096401595, 0, 1, 0, 0.096401595, 0, 0.9953425, -11.619167, 0.0113022365, -0.4495715)
@@ -334,7 +334,7 @@ transform = Transform3D(0.20000002, 0, 0, 0, 0.20000002, 0, 0, 0, 0.060000006, 0
 shape = SubResource("BoxShape3D_4c57u")
 
 [node name="obstacle6" parent="." instance=ExtResource("13_ycdy4")]
-transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -9.897839, 0, 0.949184)
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -10.8601, 0.023774445, 1.0680275)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="obstacle6"]
 

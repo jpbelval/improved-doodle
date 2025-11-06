@@ -41,7 +41,7 @@ func _on_check_box_toggled(toggled_on):
 func _on_item_list_item_selected(index: int) -> void:
 	var selected_text = $ItemList.get_item_text(index)
 	$PickedParcours.text = selected_text
-	if (selected_text == "Alternatif"):
+	if (selected_text == "Principal"):
 		$Bille.position = Vector3(-11.542, 0.099, -0.446)
 		$voiture.position = Vector3(-11.619, 0.011, -0.45)
 		$voiture.rotation = Vector3(0.0, 0.0, 0.0)

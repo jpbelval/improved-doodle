@@ -126,7 +126,6 @@ func stateMachine(delta: float) -> void:
 				speedTarget = fullSpeed
 				setWheelAngle(avoidance_direction, bigAngle)
 
-
 		3: # Dodge obstacle
 			avoidance_timer += delta
 			if distance_sensor.is_colliding():
@@ -152,7 +151,7 @@ func stateMachine(delta: float) -> void:
 			var detection = onLine()
 			if detection != [0, 0, 0, 0, 0]:
 				state = 0
-			if avoidance_timer > 1.5:
+			if avoidance_timer > 1.25:
 				wheelAngleTarget = 0.0 
 				state = 6
 				avoidance_timer = 0.0
@@ -163,7 +162,7 @@ func stateMachine(delta: float) -> void:
 		6:
 			avoidance_timer += delta
 			speedTarget = midSpeed
-			if avoidance_timer > 2.5:
+			if avoidance_timer > 5:
 				setInvWheelAngle(avoidance_direction, midAngle)
 			if distance_sensor.is_colliding():
 				var distance = global_position.distance_to(distance_sensor.get_collision_point())
