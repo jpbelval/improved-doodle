@@ -5,7 +5,7 @@ var connected := false
 
 func _ready():
 	print("Connecting…")
-	ws.connect_to_url("ws://192.168.1.144:8765")  # Adresse du PiCar
+	ws.connect_to_url("ws://192.168.1.114:8765")  # Adresse du PiCar
 
 func _process(delta):
 	ws.poll()
