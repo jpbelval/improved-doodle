@@ -63,7 +63,7 @@ func _process(delta):
 	if state == WebSocketPeer.STATE_OPEN and not connected:
 		connected = true
 		print("CONNECTED to server!")
-		ws.send_text("hello from Godot!")
+		# ws.send_text("hello from Godot!")
 	elif state == WebSocketPeer.STATE_CLOSED:
 		print("Connection closed. Reason: %s" % ws.get_close_reason())
 	
@@ -82,6 +82,7 @@ func _process(delta):
 		# send messages
 		# 0:moteur, 1:angle
 		var data = {0:movementSpeed, 1:wheelAngle};
+		print(JSON.stringify(data, "\t"))
 		ws.send_text(JSON.stringify(data, "\t"))
 
 func move(delta: float) -> void:
