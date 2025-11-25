@@ -4,10 +4,10 @@ var ws := WebSocketPeer.new()
 var connected := false
 
 # Max constantes
-const maxAngle = 38.0 # deg
-const maxSpeed = 50 # %/s
-const maxAcc = 10 # %/s2
-const maxWheelSpeed = 70.0 # deg/s
+const maxAngle = 40.0 # deg
+const maxSpeed = 30 # %/s
+const maxAcc = 45 # %/s2
+const maxWheelSpeed = 90.0 # deg/s
 
 # Speed constantes
 const fullSpeed = maxSpeed
@@ -16,9 +16,10 @@ const slowSpeed = 5*maxSpeed/8
 
 # Angle constantes
 const reverseAngle = maxAngle/12
-const littleAngle = maxAngle/8
+#const littleAngle = maxAngle/8
+const littleAngle = 2*maxAngle/8
 const midAngle = 5*maxAngle/8
-const bigAngle = 6*maxAngle/8
+const bigAngle = 7*maxAngle/8
 
 # Obstacle avoidance constants
 const obstacleDetectionDistance = 30 # meters - trigger avoidance if obstacle within this distance
@@ -41,6 +42,7 @@ var avoidance_timer = 0.0
 var avoidance_direction = 0  # 0 = left, 1 = right - which way to dodge
 
 var picar_data
+var picar_data_parsed
 
 func _ready():
 	print("Connecting…")
@@ -65,23 +67,31 @@ func _process(delta):
 		print("CONNECTED to server!")
 		# ws.send_text("hello from Godot!")
 	elif state == WebSocketPeer.STATE_CLOSED:
-		print("Connection closed. Reason: %s" % ws.get_close_reason())
-	
+		if connected:
+			print("Connection closed.")
+		connected = false
+		
 		# Lire les messages
 	while ws.get_available_packet_count() > 0:
 		picar_data = (ws.get_packet().get_string_from_utf8()) #JSON.parse_string
 		picar_data = picar_data.replace("'", "\"")
 		picar_data = JSON.parse_string(picar_data)
-		print("Received: %s" % picar_data)
+		picar_data_parsed = []
+		
+		for d in picar_data["LineValue"]:
+			picar_data_parsed.append(int(d))
+			
+		picar_data["LineValue"] = picar_data_parsed
+			
+		#print("Received: %s" % picar_data)
 	
 	# update
 	if connected and picar_data != null:
-
 		stateMachine(delta)
 		move(delta)
-		# send messages
-		# 0:moteur, 1:angle
-		var data = {0:movementSpeed, 1:wheelAngle};
+
+		#var data = {0:0.0, 1:70};
+		var data = {0:movementSpeed, 1:-wheelAngleTarget+90};
 		print(JSON.stringify(data, "\t"))
 		ws.send_text(JSON.stringify(data, "\t"))
 
@@ -186,7 +196,6 @@ func reversing() -> void:
 	elif detection == [0, 0, 0, 1, 0]:
 		wheelAngleTarget = reverseAngle
 		lastDirection = 0
-	
 	# Curves
 	elif detection == [0, 0, 0, 0, 1]:
 		wheelAngleTarget = reverseAngle
@@ -216,7 +225,6 @@ func lineFollower() -> void:
 	# [0, 0, 1, 0, 0] -> target
 	# [0, 0, 0, 1, 0] -> target
 	var detection = picar_data["LineValue"]
-	
 	# Basic case
 	if detection == [0, 0, 1, 0, 0]:
 		wheelAngleTarget = littleAngle
