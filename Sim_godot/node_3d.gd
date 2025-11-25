@@ -5,8 +5,8 @@ var connected := false
 
 # Max constantes
 const maxAngle = 38.0 # deg
-const maxSpeed = 0.07 # m/s
-const maxAcc = 0.12 # m/s2
+const maxSpeed = 50 # %/s
+const maxAcc = 10 # %/s2
 const maxWheelSpeed = 70.0 # deg/s
 
 # Speed constantes
@@ -21,7 +21,7 @@ const midAngle = 5*maxAngle/8
 const bigAngle = 6*maxAngle/8
 
 # Obstacle avoidance constants
-const obstacleDetectionDistance = 0.3 # meters - trigger avoidance if obstacle within this distance
+const obstacleDetectionDistance = 30 # meters - trigger avoidance if obstacle within this distance
 
 #Signal
 signal target_distance(distance: float)
@@ -44,7 +44,7 @@ var picar_data
 
 func _ready():
 	print("Connecting…")
-	ws.connect_to_url("ws://192.168.1.114:8765")  # Adresse du PiCar
+	ws.connect_to_url("ws://172.20.10.7:8765")  # Adresse du PiCar
 	
 	# Private
 	movementSpeed = 0.0 # m/s
@@ -78,11 +78,36 @@ func _process(delta):
 	if connected and picar_data != null:
 
 		stateMachine(delta)
+		move(delta)
 		# send messages
 		# 0:moteur, 1:angle
-		var data = {0:speedTarget, 1:wheelAngleTarget};
+		var data = {0:movementSpeed, 1:wheelAngle};
 		ws.send_text(JSON.stringify(data, "\t"))
 
+func move(delta: float) -> void:
+	# Speed update
+	if movementSpeed < speedTarget:
+		if movementSpeed + maxAcc * delta > speedTarget:
+			movementSpeed = speedTarget
+		else:
+			movementSpeed += maxAcc * delta
+	elif movementSpeed > speedTarget:
+		if movementSpeed - maxAcc * delta < speedTarget:
+			movementSpeed = speedTarget
+		else:
+			movementSpeed -= maxAcc * delta
+	
+	# Wheel angle update
+	if wheelAngle < wheelAngleTarget:
+		if wheelAngle + maxWheelSpeed * delta > wheelAngleTarget:
+			wheelAngle = wheelAngleTarget
+		else:
+			wheelAngle += maxWheelSpeed * delta
+	elif wheelAngle > wheelAngleTarget:
+		if wheelAngle - maxWheelSpeed * delta < wheelAngleTarget:
+			wheelAngle = wheelAngleTarget
+		else:
+			wheelAngle -= maxWheelSpeed * delta
 
 func stateMachine(delta: float) -> void:
 	match state:
