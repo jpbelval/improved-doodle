@@ -5,7 +5,7 @@ var connected := false
 
 # Max constantes
 const maxAngle = 45.0 # deg
-const maxSpeed = 25 # %/s
+const maxSpeed = 35 # %/s
 const maxAcc = 45 # %/s2
 const maxWheelSpeed = 120.0 # deg/s
 
@@ -45,7 +45,7 @@ var avoidance_timer = 0.0
 var avoidance_direction = 0  # 0 = left, 1 = right - which way to dodge
 
 var picar_data
-var reference = [62, 54.5, 46.5, 84.5, 75]
+var reference = [65, 55, 47, 85, 75]
 
 func _ready():
 	print("Connecting…")
@@ -89,9 +89,11 @@ func _process(delta):
 		#var data = {0:0.0, 1:100};
 		var data = {0:movementSpeed, 1:-wheelAngleTarget+90};
 		#print(state)
-		#print(picar_data["Raw"])
+		print(picar_data["Raw"])
 		#print(JSON.stringify(data, "\t"))
 		ws.send_text(JSON.stringify(data, "\t"))
+		
+	await get_tree().create_timer(0.0005).timeout 
 
 func rawToDigital(rawData: Array) -> Array:
 	var returns = [0, 0, 0, 0, 0]
@@ -236,6 +238,7 @@ func reversing() -> void:
 
 func lineFollower() -> void:
 	var detection = picar_data["Raw"]
+	speedTarget = maxSpeed
 
 	if detection == [0, 0, 1, 0, 0]:
 		wheelAngleTarget = 0.0
