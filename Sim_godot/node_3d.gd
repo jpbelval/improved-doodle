@@ -89,11 +89,11 @@ func _process(delta):
 		#var data = {0:0.0, 1:100};
 		var data = {0:movementSpeed, 1:-wheelAngleTarget+90};
 		#print(state)
-		print(picar_data["Raw"])
+		#print(picar_data["Raw"])
 		#print(JSON.stringify(data, "\t"))
 		ws.send_text(JSON.stringify(data, "\t"))
 		
-	await get_tree().create_timer(0.0005).timeout 
+	#await get_tree().create_timer(0.0005).timeout 
 
 func rawToDigital(rawData: Array) -> Array:
 	var returns = [0, 0, 0, 0, 0]
