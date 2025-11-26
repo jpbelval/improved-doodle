@@ -36,6 +36,7 @@ var speedTarget
 
 var state # State Machine
 var lastDirection # 0 : Left, 1 : Right
+var lastDetection = [0, 0, 0, 0, 0]
 
 # Avoidance state variables
 var avoidance_timer = 0.0
@@ -265,11 +266,14 @@ func lineFollower() -> void:
 		speedTarget = 0.0
 		wheelAngleTarget = 0.0
 	else:
-		if lastDirection:
-			wheelAngleTarget = -bigAngle
-		else:
-			wheelAngleTarget = bigAngle
-		speedTarget = slowSpeed
+		if lastDetection == [1, 0, 0, 0, 0] || lastDetection == [0, 0, 0, 0, 1]:
+			if lastDirection:
+				wheelAngleTarget = -bigAngle
+			else:
+				wheelAngleTarget = bigAngle
+			speedTarget = slowSpeed
+	if detection[0] || detection[1] || detection[2] || detection[3] || detection[4]:
+		lastDetection = detection
 
 func setWheelAngle(direction: int, angle: float)->void:
 	if direction:
