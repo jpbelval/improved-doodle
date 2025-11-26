@@ -42,11 +42,11 @@ var avoidance_timer = 0.0
 var avoidance_direction = 0  # 0 = left, 1 = right - which way to dodge
 
 var picar_data
-var picar_data_parsed
+var reference = [270, 270, 270, 275, 270]
 
 func _ready():
 	print("Connecting…")
-	ws.connect_to_url("ws://172.20.10.7:8765")  # Adresse du PiCar
+	ws.connect_to_url("ws://10.0.0.175:8765")  # Adresse du PiCar
 	
 	# Private
 	movementSpeed = 0.0 # m/s
@@ -60,29 +60,21 @@ func _ready():
 func _process(delta):
 	ws.poll()
 
-	var state = ws.get_ready_state()
+	var stateWB = ws.get_ready_state()
 
-	if state == WebSocketPeer.STATE_OPEN and not connected:
+	if stateWB == WebSocketPeer.STATE_OPEN and not connected:
 		connected = true
 		print("CONNECTED to server!")
-		# ws.send_text("hello from Godot!")
-	elif state == WebSocketPeer.STATE_CLOSED:
+	elif stateWB == WebSocketPeer.STATE_CLOSED:
 		if connected:
 			print("Connection closed.")
 		connected = false
 		
 		# Lire les messages
 	while ws.get_available_packet_count() > 0:
-		picar_data = (ws.get_packet().get_string_from_utf8()) #JSON.parse_string
-		picar_data = picar_data.replace("'", "\"")
+		picar_data = (ws.get_packet().get_string_from_utf8())
 		picar_data = JSON.parse_string(picar_data)
-		picar_data_parsed = []
-		
-		for d in picar_data["LineValue"]:
-			picar_data_parsed.append(int(d))
-			
-		picar_data["LineValue"] = picar_data_parsed
-			
+		picar_data["Raw"] = rawToDigital(picar_data["Raw"])
 		#print("Received: %s" % picar_data)
 	
 	# update
@@ -92,8 +84,26 @@ func _process(delta):
 
 		#var data = {0:0.0, 1:70};
 		var data = {0:movementSpeed, 1:-wheelAngleTarget+90};
-		print(JSON.stringify(data, "\t"))
+		#print(state)
+		#print(picar_data["Raw"])
+		#print(JSON.stringify(data, "\t"))
 		ws.send_text(JSON.stringify(data, "\t"))
+
+func rawToDigital(rawData: Array) -> Array:
+	var returns = [0, 0, 0, 0, 0]
+
+	for i in range(5):
+		var high = int(rawData[2 * i])
+		var low  = int(rawData[2 * i + 1])
+		var value = (high << 8) | low
+		
+		if value < reference[i]:
+			returns[i] = 1
+		else:
+			returns[i] = 0
+
+	return returns
+
 
 func move(delta: float) -> void:
 	# Speed update
@@ -163,7 +173,7 @@ func stateMachine(delta: float) -> void:
 			if picar_data["UltraValue"] != null:
 				if picar_data["UltraValue"] < obstacleDetectionDistance:
 					state = 2
-			var detection = picar_data["LineValue"]
+			var detection = picar_data["Raw"]
 			if detection != [0, 0, 0, 0, 0]:
 				state = 0
 			if avoidance_timer > 1.25:
@@ -182,13 +192,13 @@ func stateMachine(delta: float) -> void:
 			if picar_data["UltraValue"] != null:
 				if picar_data["UltraValue"] < obstacleDetectionDistance:
 					state = 2
-			var detection = picar_data["LineValue"]
+			var detection = picar_data["Raw"]
 			if detection != [0, 0, 0, 0, 0]:
 				state = 0
 
 	
 func reversing() -> void:
-	var detection = picar_data["LineValue"]
+	var detection = picar_data["Raw"]
 		# Basic case
 	if detection == [0, 0, 1, 0, 0]:
 		wheelAngleTarget = -reverseAngle
@@ -224,7 +234,7 @@ func reversing() -> void:
 func lineFollower() -> void:
 	# [0, 0, 1, 0, 0] -> target
 	# [0, 0, 0, 1, 0] -> target
-	var detection = picar_data["LineValue"]
+	var detection = picar_data["Raw"]
 	# Basic case
 	if detection == [0, 0, 1, 0, 0]:
 		wheelAngleTarget = littleAngle
