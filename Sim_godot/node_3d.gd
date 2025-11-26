@@ -5,14 +5,16 @@ var connected := false
 
 # Max constantes
 const maxAngle = 40.0 # deg
-const maxSpeed = 30 # %/s
+const maxSpeed = 20 # %/s
 const maxAcc = 45 # %/s2
 const maxWheelSpeed = 90.0 # deg/s
 
 # Speed constantes
 const fullSpeed = maxSpeed
-const midSpeed = 6*maxSpeed/8
-const slowSpeed = 5*maxSpeed/8
+const midSpeed = maxSpeed
+const slowSpeed = maxSpeed
+#const midSpeed = 6*maxSpeed/8
+#const slowSpeed = 5*maxSpeed/8
 
 # Angle constantes
 const reverseAngle = maxAngle/12
@@ -43,11 +45,11 @@ var avoidance_timer = 0.0
 var avoidance_direction = 0  # 0 = left, 1 = right - which way to dodge
 
 var picar_data
-var reference = [270, 270, 270, 275, 270]
+var reference = [275, 275, 275, 275, 275]
 
 func _ready():
 	print("Connecting…")
-	ws.connect_to_url("ws://10.0.0.175:8765")  # Adresse du PiCar
+	ws.connect_to_url("ws://172.20.10.10:8765")  # Adresse du PiCar
 	
 	# Private
 	movementSpeed = 0.0 # m/s
@@ -75,6 +77,7 @@ func _process(delta):
 	while ws.get_available_packet_count() > 0:
 		picar_data = (ws.get_packet().get_string_from_utf8())
 		picar_data = JSON.parse_string(picar_data)
+		#print("Received: %s" % picar_data)
 		picar_data["Raw"] = rawToDigital(picar_data["Raw"])
 		#print("Received: %s" % picar_data)
 	
@@ -266,12 +269,12 @@ func lineFollower() -> void:
 		speedTarget = 0.0
 		wheelAngleTarget = 0.0
 	else:
-		if lastDetection == [1, 0, 0, 0, 0] || lastDetection == [0, 0, 0, 0, 1]:
-			if lastDirection:
-				wheelAngleTarget = -bigAngle
-			else:
-				wheelAngleTarget = bigAngle
-			speedTarget = slowSpeed
+		#if lastDetection == [1, 0, 0, 0, 0] || lastDetection == [0, 0, 0, 0, 1]:
+		if lastDirection:
+			wheelAngleTarget = -bigAngle
+		else:
+			wheelAngleTarget = bigAngle
+		speedTarget = slowSpeed
 	if detection[0] || detection[1] || detection[2] || detection[3] || detection[4]:
 		lastDetection = detection
 
