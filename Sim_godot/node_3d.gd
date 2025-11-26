@@ -4,10 +4,10 @@ var ws := WebSocketPeer.new()
 var connected := false
 
 # Max constantes
-const maxAngle = 40.0 # deg
-const maxSpeed = 20 # %/s
+const maxAngle = 45.0 # deg
+const maxSpeed = 22 # %/s
 const maxAcc = 45 # %/s2
-const maxWheelSpeed = 90.0 # deg/s
+const maxWheelSpeed = 120.0 # deg/s
 
 # Speed constantes
 const fullSpeed = maxSpeed
@@ -19,12 +19,12 @@ const slowSpeed = maxSpeed
 # Angle constantes
 const reverseAngle = maxAngle/12
 #const littleAngle = maxAngle/8
-const littleAngle = 2*maxAngle/8
+const littleAngle = 3*maxAngle/8
 const midAngle = 5*maxAngle/8
 const bigAngle = 7*maxAngle/8
 
 # Obstacle avoidance constants
-const obstacleDetectionDistance = 30 # meters - trigger avoidance if obstacle within this distance
+const obstacleDetectionDistance = 10 # meters - trigger avoidance if obstacle within this distance
 
 #Signal
 signal target_distance(distance: float)
@@ -45,7 +45,7 @@ var avoidance_timer = 0.0
 var avoidance_direction = 0  # 0 = left, 1 = right - which way to dodge
 
 var picar_data
-var reference = [275, 275, 275, 275, 275]
+var reference = [62, 54.5, 46.5, 84.5, 75]
 
 func _ready():
 	print("Connecting…")
@@ -86,8 +86,8 @@ func _process(delta):
 		stateMachine(delta)
 		move(delta)
 
-		#var data = {0:0.0, 1:70};
-		var data = {0:movementSpeed, 1:-wheelAngleTarget+90};
+		#var data = {0:0.0, 1:100};
+		var data = {0:movementSpeed, 1:-wheelAngle+100};
 		#print(state)
 		#print(picar_data["Raw"])
 		#print(JSON.stringify(data, "\t"))
