@@ -167,11 +167,15 @@ func stateMachine(delta: float) -> void:
 					state = 2
 			
 			var detection = picar_data["Raw"]
-			if detection == [0, 0, 0, 0, 0] && avoidance_timer > 0.5 && avoidance_timer < 1.5 :
+			if detection == [0, 0, 0, 0, 0] && avoidance_timer > 0.9 && avoidance_timer < 1.5 :
 				wheelAngleTarget = 0.0
-			elif detection == [0, 0, 0, 0, 0] && avoidance_timer > 1.75 && avoidance_timer < 2.75:
+			elif detection == [0, 0, 0, 0, 0] && avoidance_timer > 1.75 && avoidance_timer < 2.5:
+				setWheelAngle(avoidance_direction, panicAngle)
+				if detection != [0, 0, 0, 0, 0]:
+					lineFollower()
+					state = 0
+			elif detection == [0, 0, 0, 0, 0] && avoidance_timer > 3:
 				setWheelAngle(avoidance_direction, mediumLargeAngle)
-			elif detection == [0, 0, 0, 0, 0] && avoidance_timer > 3.25:
 				state = 6
 				avoidance_timer = 0.0
 			
