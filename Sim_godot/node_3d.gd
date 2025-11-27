@@ -5,7 +5,7 @@ var connected := false
 
 # Max constantes
 const maxAngle = 45.0 # deg
-const maxSpeed = 35 # %/s
+const maxSpeed = 25 # %/s
 const maxAcc = 45 # %/s2
 const maxWheelSpeed = 120.0 # deg/s
 
@@ -39,7 +39,7 @@ var avoidance_timer = 0.0
 var avoidance_direction = 0  # 0 = left, 1 = right - which way to dodge
 
 var picar_data
-var reference = [53.0, 53.5, 44.5, 57.5, 49.0]
+var reference = [66.5, 67.0, 56.5, 79.0, 66.0]
 
 func _ready():
 	print("Connecting…")
@@ -128,7 +128,7 @@ func stateMachine(delta: float) -> void:
 			
 		0: # Follow Line
 			lineFollower()
-			
+			avoidance_timer += delta
 			if picar_data["UltraValue"] != null:
 				if picar_data["UltraValue"] < obstacleDetectionDistance:
 					state = 2 
@@ -137,6 +137,14 @@ func stateMachine(delta: float) -> void:
 						avoidance_direction = 0
 					else:
 						avoidance_direction = 1
+			var detection = picar_data["Raw"]
+			if avoidance_timer > 2 && detection == [0, 0, 0, 0, 0]:
+				state = 8
+				avoidance_timer = 0.0
+				if wheelAngleTarget > 0:
+					avoidance_direction = 0
+				else:
+					avoidance_direction = 1
 			
 		2: # Reverse maneuver
 			avoidance_timer += delta
@@ -174,6 +182,7 @@ func stateMachine(delta: float) -> void:
 				if detection != [0, 0, 0, 0, 0]:
 					lineFollower()
 					state = 0
+					avoidance_timer = 0.0
 			elif detection == [0, 0, 0, 0, 0] && avoidance_timer > 3:
 				setWheelAngle(avoidance_direction, mediumLargeAngle)
 				state = 6
@@ -200,6 +209,13 @@ func stateMachine(delta: float) -> void:
 		7:
 			speedTarget = 0.0
 			wheelAngleTarget = 0.0
+		8: 
+			speedTarget = -slowSpeed
+			setWheelAngle(avoidance_direction, -panicAngle)
+			var detection = picar_data["Raw"]
+			if detection != [0, 0, 0, 0, 0]:
+				state = 0
+				avoidance_timer = 0.0
 
 	
 func reversing() -> void:
@@ -261,6 +277,8 @@ func lineFollower() -> void:
 			wheelAngleTarget = panicAngle
 		else:
 			wheelAngleTarget = -panicAngle
+	#elif detection == [0, 0, 0, 0, 0]:
+		#reversing()
 	elif detection == [1, 1, 1, 1, 1]:
 		wheelAngleTarget = 0.0
 		state = 7
