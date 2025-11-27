@@ -149,12 +149,16 @@ func stateMachine(delta: float) -> void:
 						avoidance_direction = 0
 					else:
 						avoidance_direction = 1
+					
 			else:
 				emit_signal("target_distance", 2)
 		2: # Reverse maneuver
-			reversing()
 			avoidance_timer += delta
-
+			if avoidance_timer > 1:
+				reversing()
+			else:
+				speedTarget = 0
+			
 			if avoidance_timer > 10.0 || picar_data["UltraValue"] > 34:
 				state = 5
 				avoidance_timer = 0
@@ -179,12 +183,11 @@ func stateMachine(delta: float) -> void:
 			var detection = picar_data["Raw"]
 			if detection == [0, 0, 0, 0, 0] && avoidance_timer > 0.5 && avoidance_timer < 1.5 :
 				wheelAngleTarget = 0.0
-			elif detection == [0, 0, 0, 0, 0] && avoidance_timer > 1.5 && avoidance_timer < 2.5:
+			elif detection == [0, 0, 0, 0, 0] && avoidance_timer > 1.75 && avoidance_timer < 2.75:
 				setWheelAngle(avoidance_direction, mediumLargeAngle)
-			elif detection == [0, 0, 0, 0, 0] && avoidance_timer > 2.5 && avoidance_timer < 3:
-				wheelAngleTarget = 0.0
-			elif detection == [0, 0, 0, 0, 0] && avoidance_timer > 3:
+			elif detection == [0, 0, 0, 0, 0] && avoidance_timer > 3.25:
 				state = 6
+				avoidance_timer = 0.0
 			
 		5:
 			avoidance_timer += delta
@@ -198,8 +201,6 @@ func stateMachine(delta: float) -> void:
 				avoidance_timer = 0.0
 			
 		6:
-			avoidance_timer += delta
-			setWheelAngle(avoidance_direction, mediumLargeAngle)
 			if picar_data["UltraValue"] != null:
 				if picar_data["UltraValue"] < obstacleDetectionDistance:
 					state = 2
