@@ -204,10 +204,9 @@ func stateMachine(delta: float) -> void:
 	
 func reversing() -> void:
 	var detection = picar_data["Raw"]
-		# Basic case
+		# Basic cas
 	if detection == [0, 0, 1, 0, 0]:
-		wheelAngleTarget = -reverseAngle
-		lastDirection = 1
+		wheelAngleTarget = 0.0
 	elif detection == [0, 0, 0, 1, 0]:
 		wheelAngleTarget = reverseAngle
 		lastDirection = 0
@@ -218,7 +217,7 @@ func reversing() -> void:
 	elif detection == [0, 1, 0, 0, 0] || detection == [0, 1, 1, 0, 0]:
 		wheelAngleTarget = -reverseAngle
 		lastDirection = 1
-		
+	
 	# Panic mode
 	elif detection == [1, 0, 0, 0, 0] || detection == [1, 1, 0, 0, 0]:
 		wheelAngleTarget = -reverseAngle
@@ -270,9 +269,3 @@ func setWheelAngle(direction: int, angle: float)->void:
 		wheelAngleTarget = -angle
 	else:
 		wheelAngleTarget = angle
-
-func setInvWheelAngle(direction: int, angle: float)->void:
-	if direction:
-		wheelAngleTarget = angle
-	else:
-		wheelAngleTarget = -angle
