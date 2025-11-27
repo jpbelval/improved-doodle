@@ -171,7 +171,7 @@ func stateMachine(delta: float) -> void:
 			if avoidance_timer > 6.0:
 				state = 4
 				avoidance_timer = 0.0
-				setInvWheelAngle(avoidance_direction, midAngle)
+				setWheelAngle(avoidance_direction, -midAngle)
 				
 		4: # Find line again
 			avoidance_timer += delta
@@ -193,7 +193,7 @@ func stateMachine(delta: float) -> void:
 			avoidance_timer += delta
 			speedTarget = midSpeed
 			if avoidance_timer > 5:
-				setInvWheelAngle(avoidance_direction, midAngle)
+				setWheelAngle(avoidance_direction, -midAngle)
 			if picar_data["UltraValue"] != null:
 				if picar_data["UltraValue"] < obstacleDetectionDistance:
 					state = 2
@@ -262,6 +262,8 @@ func lineFollower() -> void:
 			wheelAngle = panicAngle
 		else:
 			wheelAngle = -panicAngle
+	else:
+		setWheelAngle(lastDirection, -panicAngle)
 
 func setWheelAngle(direction: int, angle: float)->void:
 	if direction:
