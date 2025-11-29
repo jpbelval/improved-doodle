@@ -233,7 +233,7 @@ func reversing() -> void:
 	elif detection == [0, 1, 0, 0, 0] || detection == [0, 1, 1, 0, 0]:
 		wheelAngleTarget = -reverseAngle
 		lastDirection = 1
-		
+	
 	# Panic mode
 	elif detection == [1, 0, 0, 0, 0] || detection == [1, 1, 0, 0, 0]:
 		wheelAngleTarget = -reverseAngle
