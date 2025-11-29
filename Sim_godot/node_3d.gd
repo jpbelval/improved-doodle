@@ -50,7 +50,7 @@ var ws
 
 func _ready():
 	print("Connecting…")
-	ws.connect_to_url("ws://10.29.203.165:8765")  # Adresse du PiCar
+	ws.connect_to_url("ws://10.0.0.175:8765")  # Adresse du PiCar
 	
 	# Private
 	movementSpeed = 0.0 # m/s
@@ -156,9 +156,13 @@ func fastStateMachine(delta: float) -> void:
 				timer = 0.0
 				wheelAngleTarget = 0.0
 			
-		2: 
-			pass
-		
+		2: # leave line
+			timer += delta
+			movement += movementSpeed * timer
+			if movement > 10:
+				state = -4
+				wheelAngleTarget = 0.0
+				timer = 0.0
 		
 # To Be Deleted
 func stateMachine(delta: float) -> void:
