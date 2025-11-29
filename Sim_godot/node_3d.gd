@@ -85,6 +85,7 @@ func rawToDigital(rawData: Array) -> Array:
 			returns[i] = 0
 	return returns
 
+# Set movementSpeed with acceleration
 func move(delta: float) -> void:
 	# Speed update
 	if movementSpeed < speedTarget:
@@ -98,6 +99,7 @@ func move(delta: float) -> void:
 		else:
 			movementSpeed -= maxAcc * delta
 
+# Refactor of stateMachine with optimization 
 func fastStateMachine(delta: float) -> void:
 	match state:
 		-3: # wait for next state
@@ -118,6 +120,7 @@ func fastStateMachine(delta: float) -> void:
 		0: # Line follower state
 			pass
 
+# To Be Deleted
 func stateMachine(delta: float) -> void:
 	match state:
 		-1:
@@ -150,7 +153,7 @@ func stateMachine(delta: float) -> void:
 		2: # Reverse maneuver
 			avoidance_timer += delta
 			if avoidance_timer > 1:
-				reversing()
+				lineFollower(-1)
 			else:
 				speedTarget = 0
 			
@@ -218,73 +221,27 @@ func stateMachine(delta: float) -> void:
 				state = 0
 				avoidance_timer = 0.0
 
-
-	
-func reversing() -> void:
-	var detection = picar_data["Raw"]
-		# Basic case
-	if detection == [0, 0, 1, 0, 0]:
+# Set wheelAngle to follow the line
+func lineFollower(reverse: int = 1) -> void:
+	if picar_data["Raw"] == [0, 0, 1, 0, 0]:
 		wheelAngleTarget = 0.0
-	elif detection == [0, 0, 0, 1, 0]:
-		wheelAngleTarget = reverseAngle
-		lastDirection = 0
-	# Curves
-	elif detection == [0, 0, 0, 0, 1]:
-		wheelAngleTarget = reverseAngle
-		lastDirection = 0
-	elif detection == [0, 1, 0, 0, 0] || detection == [0, 1, 1, 0, 0]:
-		wheelAngleTarget = -reverseAngle
-		lastDirection = 1
-	
-	# Panic mode
-	elif detection == [1, 0, 0, 0, 0] || detection == [1, 1, 0, 0, 0]:
-		wheelAngleTarget = -reverseAngle
-		lastDirection = 1
-	else:
-		if lastDirection:
-			wheelAngleTarget = -reverseAngle
-		else:
-			wheelAngleTarget = reverseAngle
-	speedTarget = -slowSpeed
-	
+	elif picar_data["Raw"] == [0, 1, 1, 0, 0] || picar_data["Raw"]  == [0, 0, 1, 1, 0]:
+		setWheelAngle(picar_data["Raw"][1], reverse*littleAngle)
+	elif picar_data["Raw"] == [0, 1, 0, 0, 0] || picar_data["Raw"]  == [0, 0, 0, 1, 0]:
+		setWheelAngle(picar_data["Raw"][1], reverse*midAngle)
+	elif picar_data["Raw"] == [1, 1, 0, 0, 0] || picar_data["Raw"]  == [0, 0, 0, 1, 1]:
+		setWheelAngle(picar_data["Raw"][1], reverse*bigAngle)
+	elif picar_data["Raw"] == [1, 0, 0, 0, 0] || picar_data["Raw"]  == [0, 0, 0, 0, 1]:
+		setWheelAngle(picar_data["Raw"][0], reverse*panicAngle)
 
-func lineFollower() -> void:
-	var detection = picar_data["Raw"]
-	speedTarget = maxSpeed
-	
-	if detection == [0, 0, 1, 0, 0]:
-		wheelAngleTarget = 0.0
-	elif detection == [0, 1, 1, 0, 0] || detection  == [0, 0, 1, 1, 0]:
-		if detection[1] == 1:
-			wheelAngleTarget = littleAngle
-		else:
-			wheelAngleTarget = -littleAngle
-	elif detection == [0, 1, 0, 0, 0] || detection  == [0, 0, 0, 1, 0]:
-		if detection[1] == 1:
-			wheelAngleTarget = midAngle
-		else:
-			wheelAngleTarget = -midAngle
-	elif detection == [1, 1, 0, 0, 0] || detection  == [0, 0, 0, 1, 1]:
-		if detection[1] == 1:
-			wheelAngleTarget = bigAngle
-		else:
-			wheelAngleTarget = -bigAngle
-	elif detection == [1, 0, 0, 0, 0] || detection  == [0, 0, 0, 0, 1]:
-		if detection[0] == 1:
-			wheelAngleTarget = panicAngle
-		else:
-			wheelAngleTarget = -panicAngle
-	elif detection == [1, 1, 1, 1, 1]:
-		wheelAngleTarget = 0.0
-		state = 7
-		speedTarget = 0.0	
-
+# Transform relative angle and direction to real angle
 func setWheelAngle(direction: int, angle: float)->void:
 	if direction:
-		wheelAngleTarget = -angle
-	else:
 		wheelAngleTarget = angle
-		
+	else:
+		wheelAngleTarget = -angle
+
+# Get data from PiCar
 func readPiCar(printData: bool = false) -> void:
 	while ws.get_available_packet_count() > 0:
 		picar_data = (ws.get_packet().get_string_from_utf8())
@@ -292,7 +249,8 @@ func readPiCar(printData: bool = false) -> void:
 		picar_data["Raw"] = rawToDigital(picar_data["Raw"])
 	if printData:
 		print(picar_data)
-		
+
+# Send data to PiCar
 func sendPiCar(data: Dictionary, printData: bool = false) -> void:
 	ws.send_text(JSON.stringify(data, "\t"))
 	if printData:
