@@ -25,6 +25,9 @@ const reference = [66.5, 67.0, 56.5, 79.0, 66.0]
 # Obstacle avoidance constants
 const obstacleDetectionDistance = 20 # cm - trigger avoidance if obstacle within this distance
 
+# Avoidance constants
+const avoidance_direction = 1  # 1 = left, 0 = right - which way to dodge
+
 # Movement Variables
 var movementSpeed
 var wheelAngleTarget
@@ -37,9 +40,8 @@ var nextState
 var delay
 var timer
 
-# Avoidance state variables
+# Avoidance variable
 var avoidance_timer
-var avoidance_direction = 1  # 1 = left, 0 = right - which way to dodge
 
 # picar connection and data
 var picar_data
@@ -58,10 +60,9 @@ func _ready():
 	wheelAngleTarget = 0.0 # deg
 	speedTarget = 0.2 # m/s
 	avoidance_timer = 0.0
-	avoidance_direction = 0
 
 func _process(delta):
-	# PiCar communication
+	# Receve PiCar communication
 	ws.poll()
 	readPiCar()
 	
@@ -69,17 +70,14 @@ func _process(delta):
 	fastStateMachine(delta)
 	move(delta)
 	
-	# Picar Communication
+	# Send Picar Communication
 	sendPiCar({0:movementSpeed, 1:-wheelAngleTarget+100})
 
 # Transform raw data from the PiCar to digital data
 func rawToDigital(rawData: Array) -> Array:
 	var returns = [0, 0, 0, 0, 0]
 	for i in range(5):
-		var high = int(rawData[2 * i])
-		var low  = int(rawData[2 * i + 1])
-		var value = (high << 8) | low
-		if value < reference[i]:
+		if (int(rawData[2 * i]) << 8) | int(rawData[2 * i + 1]) < reference[i]:
 			returns[i] = 1
 		else:
 			returns[i] = 0
@@ -102,11 +100,11 @@ func move(delta: float) -> void:
 # Refactor of stateMachine with optimization 
 func fastStateMachine(delta: float) -> void:
 	match state:
-		-4: # complete stop
+		-4: # Complete stop
 			speedTarget = 0.0
 			wheelAngleTarget = 0.0
 			
-		-3: # wait for next state
+		-3: # Wait for next state
 			timer += delta
 			if timer > delay:
 				state = nextState
@@ -157,18 +155,10 @@ func stateMachine(delta: float) -> void:
 				if picar_data["UltraValue"] < obstacleDetectionDistance:
 					state = 2 
 					avoidance_timer = 0.0
-					if wheelAngleTarget > 0:
-						avoidance_direction = 0
-					else:
-						avoidance_direction = 1
 			var detection = picar_data["Raw"]
 			if avoidance_timer > 2 && detection == [0, 0, 0, 0, 0]:
 				state = 8
 				avoidance_timer = 0.0
-				if wheelAngleTarget > 0:
-					avoidance_direction = 0
-				else:
-					avoidance_direction = 1
 			
 		2: # Reverse maneuver
 			avoidance_timer += delta
@@ -255,17 +245,14 @@ func lineFollower(reverse: int = 1) -> void:
 		setWheelAngle(picar_data["Raw"][0], reverse*panicAngle)
 
 # Transform relative angle and direction to real angle
+# direction is only 1 or 0 : 1 -> left, 0 -> right
 func setWheelAngle(direction: int, angle: float)->void:
-	if direction:
-		wheelAngleTarget = angle
-	else:
-		wheelAngleTarget = -angle
+	wheelAngleTarget = direction*angle + (direction-1)*angle
 
 # Get data from PiCar
 func readPiCar(printData: bool = false) -> void:
 	while ws.get_available_packet_count() > 0:
-		picar_data = (ws.get_packet().get_string_from_utf8())
-		picar_data = JSON.parse_string(picar_data)
+		picar_data = JSON.parse_string(ws.get_packet().get_string_from_utf8())
 		picar_data["Raw"] = rawToDigital(picar_data["Raw"])
 	if printData:
 		print(picar_data)
