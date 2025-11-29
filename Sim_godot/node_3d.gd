@@ -50,12 +50,12 @@ var ws
 
 func _ready():
 	print("Connecting…")
+	ws = WebSocketPeer.new()
 	ws.connect_to_url("ws://10.0.0.175:8765")  # Adresse du PiCar
 	
 	# Private
 	movementSpeed = 0.0 # m/s
 	state = -2
-	ws = WebSocketPeer.new()
 	
 	# Public
 	wheelAngleTarget = 0.0 # deg
@@ -114,7 +114,9 @@ func fastStateMachine(delta: float) -> void:
 		-2: # Connection state
 			if ws.get_ready_state() == WebSocketPeer.STATE_OPEN:
 				print("CONNECTED to server!")
-				state = -1
+				readPiCar()
+				if picar_data["Raw"] != null:
+					state = -1
 			speedTarget = 0.0
 			wheelAngleTarget = 0.0
 			
