@@ -76,7 +76,7 @@ func _process(delta):
 	move(delta)
 	print("state " + str(state))
 	# Send Picar Communication
-	sendPiCar({0:movementSpeed, 1:-wheelAngleTarget+100})
+	sendPiCar({0:movementSpeed, 1:-wheelAngleTarget+100}, true)
 
 # Transform raw data from the PiCar to digital data
 func rawToDigital(rawData: Array) -> Array:
@@ -130,9 +130,7 @@ func fastStateMachine(delta: float) -> void:
 		-1: # Start state
 			if picar_data["Raw"] == [1, 1, 1, 1, 1]:
 				speedTarget = maxSpeed
-				print("so fast")
-			var sum = picar_data["Raw"][0] + picar_data["Raw"][1] + picar_data["Raw"][2] + picar_data["Raw"][3] + picar_data["Raw"][4]
-			if sum < 3:
+			if speedTarget != 0 && picar_data["Raw"][0] + picar_data["Raw"][1] + picar_data["Raw"][2] + picar_data["Raw"][3] + picar_data["Raw"][4] < 3:
 				state = 0
 				
 		0: # Line follower state
