@@ -47,6 +47,7 @@ var avoidance_timer
 # picar connection and data
 var picar_data
 var ws
+var connected
 
 func _ready():
 	print("Connecting…")
@@ -61,6 +62,9 @@ func _ready():
 	wheelAngleTarget = 0.0 # deg
 	speedTarget = 0.2 # m/s
 	avoidance_timer = 0.0
+	timer = 0.0
+	movement = 0.0
+	connected = false
 
 func _process(delta):
 	# Receve PiCar communication
@@ -70,7 +74,7 @@ func _process(delta):
 	# logic
 	fastStateMachine(delta)
 	move(delta)
-	
+	print("state " + str(state))
 	# Send Picar Communication
 	sendPiCar({0:movementSpeed, 1:-wheelAngleTarget+100})
 
@@ -101,6 +105,7 @@ func move(delta: float) -> void:
 # Refactor of stateMachine with optimization 
 func fastStateMachine(delta: float) -> void:
 	match state:
+
 		-4: # Complete stop
 			speedTarget = 0.0
 			wheelAngleTarget = 0.0
@@ -113,9 +118,11 @@ func fastStateMachine(delta: float) -> void:
 
 		-2: # Connection state
 			if ws.get_ready_state() == WebSocketPeer.STATE_OPEN:
-				print("CONNECTED to server!")
+				if not connected:
+					print("CONNECTED to server!")
+					connected = true
 				readPiCar()
-				if picar_data["Raw"] != null:
+				if picar_data != null:
 					state = -1
 			speedTarget = 0.0
 			wheelAngleTarget = 0.0
@@ -123,13 +130,14 @@ func fastStateMachine(delta: float) -> void:
 		-1: # Start state
 			if picar_data["Raw"] == [1, 1, 1, 1, 1]:
 				speedTarget = maxSpeed
+				print("so fast")
 			var sum = picar_data["Raw"][0] + picar_data["Raw"][1] + picar_data["Raw"][2] + picar_data["Raw"][3] + picar_data["Raw"][4]
 			if sum < 3:
 				state = 0
 				
 		0: # Line follower state
 			timer += delta
-			if picar_data["UltraValue"] != null && picar_data["UltraValue"] > obstacleDetectionDistance:
+			if picar_data["UltraValue"] != null && picar_data["UltraValue"] < obstacleDetectionDistance:
 				state = 1
 				timer = 0.0
 			elif picar_data["Raw"] == [1, 1, 1, 1, 1]:
@@ -137,12 +145,15 @@ func fastStateMachine(delta: float) -> void:
 				timer = 0.0
 			elif picar_data["Raw"] == [0, 0, 0, 0, 0] && timer > 2:
 				state = 0 # figurer quel state mettre
+				lineFollower()
 			else:
 				lineFollower()
+				speedTarget = maxSpeed
 				timer = 0.0
 
 		1: # Reverse until 30 cm
 			timer = 0.0
+			
 			if timer > 1:
 				lineFollower(-1)
 			else:
@@ -163,7 +174,6 @@ func fastStateMachine(delta: float) -> void:
 			movement += movementSpeed * timer
 			if movement > 10:
 				state = -4
-				wheelAngleTarget = 0.0
 				timer = 0.0
 		
 # To Be Deleted
