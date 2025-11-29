@@ -1,8 +1,5 @@
 extends Node
 
-var ws := WebSocketPeer.new()
-var connected := false
-
 # Max constantes
 const maxAngle = 45.0 # deg
 const maxSpeed = 25 # %/s
@@ -10,36 +7,41 @@ const maxAcc = 45 # %/s2
 const maxWheelSpeed = 120.0 # deg/s
 
 # Speed constantes
-const fullSpeed = maxSpeed
-const midSpeed = maxSpeed
-const slowSpeed = maxSpeed
+const fullSpeed = 8.0*maxSpeed/8.0
+const midSpeed = 7.0*maxSpeed/8.0
+const slowSpeed = 6.0*maxSpeed/8.0
 
 # Angle constantes
-const reverseAngle = maxAngle/12
-const littleAngle = 3
-const midAngle = 10
-const mediumLargeAngle = 23
-const bigAngle = 30
-const panicAngle = maxAngle
+const reverseAngle = 3.75*maxAngle/45.0
+const littleAngle = 3.0*maxAngle/45.0
+const midAngle = 10.0*maxAngle/45.0
+const mediumLargeAngle = 23.0*maxAngle/45.0
+const bigAngle = 30.0*maxAngle/45.0
+const panicAngle = 45.0*maxAngle/45.0
+
+# reference for the line module
+const reference = [66.5, 67.0, 56.5, 79.0, 66.0]
 
 # Obstacle avoidance constants
-const obstacleDetectionDistance = 20 # meters - trigger avoidance if obstacle within this distance
+const obstacleDetectionDistance = 20 # cm - trigger avoidance if obstacle within this distance
 
-# Variables
+# Movement Variables
 var movementSpeed
-
 var wheelAngleTarget
 var speedTarget
-
-var state # State Machine
 var lastDirection # 0 : Left, 1 : Right
 
-# Avoidance state variables
-var avoidance_timer = 0.0
-var avoidance_direction = 0  # 0 = left, 1 = right - which way to dodge
+# state variable
+var state
 
+# Avoidance state variables
+var avoidance_timer
+var avoidance_direction  # 0 = left, 1 = right - which way to dodge
+
+# picar connection and data
 var picar_data
-var reference = [66.5, 67.0, 56.5, 79.0, 66.0]
+var ws := WebSocketPeer.new()
+var connected := false
 
 func _ready():
 	print("Connecting…")
@@ -47,61 +49,37 @@ func _ready():
 	
 	# Private
 	movementSpeed = 0.0 # m/s
-	state = -1
+	state = -2
 	
 	# Public
 	wheelAngleTarget = 0.0 # deg
 	speedTarget = 0.2 # m/s
+	avoidance_timer = 0.0
+	avoidance_direction = 0
 
 func _process(delta):
+	# PiCar communication
 	ws.poll()
-
-	var stateWB = ws.get_ready_state()
-
-	if stateWB == WebSocketPeer.STATE_OPEN and not connected:
-		connected = true
-		print("CONNECTED to server!")
-	elif stateWB == WebSocketPeer.STATE_CLOSED:
-		if connected:
-			print("Connection closed.")
-		connected = false
-		
-		# Lire les messages
-	while ws.get_available_packet_count() > 0:
-		picar_data = (ws.get_packet().get_string_from_utf8())
-		picar_data = JSON.parse_string(picar_data)
-		#print("Received: %s" % picar_data)
-		picar_data["Raw"] = rawToDigital(picar_data["Raw"])
-		#print("Received: %s" % picar_data)
+	readPiCar()
+	
+	# logic
+	stateMachine(delta)
 	
 	# update
 	if connected and picar_data != null:
-		stateMachine(delta)
 		move(delta)
-	
-		#var data = {0:0.0, 1:45}
-		#if wheelAngleTarget == 45:
-		#	wheelAngleTarget += 10;
-		
-		var data = {0:movementSpeed, 1:-wheelAngleTarget+100};
-		#print(state)
-		#print(picar_data["Raw"])
-		#print(JSON.stringify(data, "\t"))
-		ws.send_text(JSON.stringify(data, "\t"))
+		sendPiCar({0:movementSpeed, 1:-wheelAngleTarget+100})
 
 func rawToDigital(rawData: Array) -> Array:
 	var returns = [0, 0, 0, 0, 0]
-
 	for i in range(5):
 		var high = int(rawData[2 * i])
 		var low  = int(rawData[2 * i + 1])
 		var value = (high << 8) | low
-		
 		if value < reference[i]:
 			returns[i] = 1
 		else:
 			returns[i] = 0
-
 	return returns
 
 func move(delta: float) -> void:
@@ -116,6 +94,20 @@ func move(delta: float) -> void:
 			movementSpeed = speedTarget
 		else:
 			movementSpeed -= maxAcc * delta
+
+func fastStateMachine():
+	match state:
+		-2: # Connection state
+			if ws.get_ready_state() == WebSocketPeer.STATE_OPEN:
+				connected = true
+				print("CONNECTED to server!")
+				state = -1
+			speedTarget = 0.0
+			wheelAngleTarget = 0.0
+		-1: # Start state
+			var i = 0
+		0: # Line follower state
+			var i = 0
 
 func stateMachine(delta: float) -> void:
 	match state:
@@ -238,23 +230,18 @@ func reversing() -> void:
 	elif detection == [1, 0, 0, 0, 0] || detection == [1, 1, 0, 0, 0]:
 		wheelAngleTarget = -reverseAngle
 		lastDirection = 1
-	elif detection == [1, 1, 1, 1, 1]:
-		state = 7
-		speedTarget = 0.0
-		wheelAngleTarget = 0.0
 	else:
 		if lastDirection:
 			wheelAngleTarget = -reverseAngle
 		else:
 			wheelAngleTarget = reverseAngle
-		
 	speedTarget = -slowSpeed
 	
 
 func lineFollower() -> void:
 	var detection = picar_data["Raw"]
 	speedTarget = maxSpeed
-
+	
 	if detection == [0, 0, 1, 0, 0]:
 		wheelAngleTarget = 0.0
 	elif detection == [0, 1, 1, 0, 0] || detection  == [0, 0, 1, 1, 0]:
@@ -277,16 +264,26 @@ func lineFollower() -> void:
 			wheelAngleTarget = panicAngle
 		else:
 			wheelAngleTarget = -panicAngle
-	#elif detection == [0, 0, 0, 0, 0]:
-		#reversing()
 	elif detection == [1, 1, 1, 1, 1]:
 		wheelAngleTarget = 0.0
 		state = 7
-		speedTarget = 0.0
-		movementSpeed = 0.0
+		speedTarget = 0.0	
 
 func setWheelAngle(direction: int, angle: float)->void:
 	if direction:
 		wheelAngleTarget = -angle
 	else:
 		wheelAngleTarget = angle
+		
+func readPiCar(printData: bool = false) -> void:
+	while ws.get_available_packet_count() > 0:
+		picar_data = (ws.get_packet().get_string_from_utf8())
+		picar_data = JSON.parse_string(picar_data)
+		picar_data["Raw"] = rawToDigital(picar_data["Raw"])
+	if printData:
+		print(picar_data)
+		
+func sendPiCar(data: Dictionary, printData: bool = false) -> void:
+	ws.send_text(JSON.stringify(data, "\t"))
+	if printData:
+		print(JSON.stringify(data, "\t"))
