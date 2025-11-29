@@ -70,7 +70,7 @@ func _process(delta):
 	readPiCar()
 	
 	# logic
-        fastStateMachine(delta)
+	fastStateMachine(delta)
 	move(delta)
 	
 	
@@ -120,10 +120,9 @@ func fastStateMachine(delta: float) -> void:
 			wheelAngleTarget = 0.0
 			
 		-1: # Start state
-			var i = 0
-			
+			pass
 		0: # Line follower state
-			var i = 0
+			pass
 
 func stateMachine(delta: float) -> void:
 	match state:
