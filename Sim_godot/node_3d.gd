@@ -2,9 +2,9 @@ extends Node
 
 # Max constantes
 const maxAngle = 45.0 # deg
-const maxSpeed = 40 # %/s
-const maxAcc = 45 # %/s2
-const maxWheelSpeed = 120.0 # deg/s
+const maxSpeed = 35 # %/s
+const maxAcc = 35 # %/s2
+const maxWheelSpeed = 140.0 # deg/s
 
 # Speed constantes
 const fullSpeed = 8.0*maxSpeed/8.0
@@ -32,6 +32,7 @@ const avoidance_direction = 1  # 1 = left, 0 = right - which way to dodge
 var movementSpeed
 var wheelAngleTarget
 var speedTarget
+var wheelAngle
 var lastDirection # 1 : Left, 0 : Right
 var movement
 
@@ -60,6 +61,7 @@ func _ready():
 	
 	# Public
 	wheelAngleTarget = 0.0 # deg
+	wheelAngle = 0.0
 	speedTarget = 0.2 # m/s
 	avoidance_timer = 0.0
 	timer = 0.0
@@ -75,7 +77,7 @@ func _process(delta):
 	fastStateMachine(delta)
 	move(delta)
 	# Send Picar Communication
-	sendPiCar({0:movementSpeed, 1:-wheelAngleTarget+100})
+	sendPiCar({0:movementSpeed, 1:-wheelAngle+100})
 
 # Transform raw data from the PiCar to digital data
 func rawToDigital(rawData: Array) -> Array:
@@ -100,11 +102,25 @@ func move(delta: float) -> void:
 			movementSpeed = speedTarget
 		else:
 			movementSpeed -= maxAcc * delta
+	
+	# Angle update
+	if wheelAngle < wheelAngleTarget:
+		if wheelAngle + maxWheelSpeed * delta > wheelAngleTarget:
+			wheelAngle = wheelAngleTarget
+		else:
+			wheelAngle += maxWheelSpeed * delta
+	elif wheelAngle > wheelAngleTarget:
+		if wheelAngle - maxWheelSpeed * delta < wheelAngleTarget:
+			wheelAngle = wheelAngleTarget
+		else:
+			wheelAngle -= maxWheelSpeed * delta
 
 # Refactor of stateMachine with optimization 
 func fastStateMachine(delta: float) -> void:
 	match state:
-
+		-5: # debug
+			setWheelAngle(avoidance_direction, bigAngle)
+			speedTarget = 30
 		-4: # Complete stop
 			speedTarget = 0.0
 			wheelAngleTarget = 0.0
@@ -140,13 +156,20 @@ func fastStateMachine(delta: float) -> void:
 			elif picar_data["Raw"] == [1, 1, 1, 1, 1]:
 				state = -4
 				timer = 0.0
-			elif picar_data["Raw"] == [0, 0, 0, 0, 0] && timer > 2:
-				state = 0 # figurer quel state mettre
-				lineFollower()
+			elif picar_data["Raw"] == [0, 0, 0, 0, 0] && timer > 1:
+				state = -3 # figurer quel state mettre
+				timer = 0.0
+				if wheelAngleTarget > 0:
+					lastDirection = 1
+				else:
+					lastDirection = 0
+				delay = 0.25
+				nextState = 10
 			else:
 				lineFollower()
 				speedTarget = maxSpeed
-				timer = 0.0
+				if(picar_data["Raw"] != [0, 0, 0, 0, 0]):
+					timer = 0.0
 
 		1: # Reverse until 30 cm
 			timer = 0.0
@@ -172,7 +195,14 @@ func fastStateMachine(delta: float) -> void:
 			if movement > 10:
 				state = -4
 				timer = 0.0
-		
+
+		10: # retour sur la ligne
+			timer += delta
+			speedTarget = -midSpeed
+			setWheelAngle(lastDirection, -mediumLargeAngle)
+			if picar_data["Raw"] != [0, 0, 0, 0, 0]:
+				state = 0
+				timer = 0.0
 # To Be Deleted
 func stateMachine(delta: float) -> void:
 	match state:
