@@ -33,6 +33,7 @@ var movementSpeed
 var wheelAngleTarget
 var speedTarget
 var lastDirection # 1 : Left, 0 : Right
+var movement
 
 # state variable
 var state
@@ -133,11 +134,32 @@ func fastStateMachine(delta: float) -> void:
 				state = -4
 				timer = 0.0
 			elif picar_data["Raw"] == [0, 0, 0, 0, 0] && timer > 2:
-				state = 1 # figurer quel state mettre
+				state = 0 # figurer quel state mettre
 			else:
 				lineFollower()
 				timer = 0.0
 
+		1: # Reverse until 30 cm
+			timer = 0.0
+			if timer > 1:
+				lineFollower(-1)
+			else:
+				speedTarget = 0
+				
+			if picar_data["UltraValue"] > 23:
+				state = -3
+				nextState = 2
+				timer = 0.0
+				delay = 1
+			elif timer > 15:
+				state = 0 # find back step
+				timer = 0.0
+				wheelAngleTarget = 0.0
+			
+		2: 
+			pass
+		
+		
 # To Be Deleted
 func stateMachine(delta: float) -> void:
 	match state:
