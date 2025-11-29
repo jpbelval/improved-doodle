@@ -2,7 +2,7 @@ extends Node
 
 # Max constantes
 const maxAngle = 45.0 # deg
-const maxSpeed = 25 # %/s
+const maxSpeed = 40 # %/s
 const maxAcc = 45 # %/s2
 const maxWheelSpeed = 120.0 # deg/s
 
@@ -74,9 +74,8 @@ func _process(delta):
 	# logic
 	fastStateMachine(delta)
 	move(delta)
-	print("state " + str(state))
 	# Send Picar Communication
-	sendPiCar({0:movementSpeed, 1:-wheelAngleTarget+100}, true)
+	sendPiCar({0:movementSpeed, 1:-wheelAngleTarget+100})
 
 # Transform raw data from the PiCar to digital data
 func rawToDigital(rawData: Array) -> Array:
