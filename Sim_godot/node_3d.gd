@@ -40,8 +40,8 @@ var avoidance_direction  # 0 = left, 1 = right - which way to dodge
 
 # picar connection and data
 var picar_data
-var ws := WebSocketPeer.new()
-var connected := false
+var ws
+var connected
 
 func _ready():
 	print("Connecting…")
@@ -50,6 +50,10 @@ func _ready():
 	# Private
 	movementSpeed = 0.0 # m/s
 	state = -2
+	ws = WebSocketPeer.new()
+	
+	# protected
+	connected = false
 	
 	# Public
 	wheelAngleTarget = 0.0 # deg
@@ -64,12 +68,12 @@ func _process(delta):
 	
 	# logic
 	stateMachine(delta)
+	move(delta)
 	
-	# update
-	if connected and picar_data != null:
-		move(delta)
-		sendPiCar({0:movementSpeed, 1:-wheelAngleTarget+100})
+	# Picar Communication
+	sendPiCar({0:movementSpeed, 1:-wheelAngleTarget+100})
 
+# Transform raw data from the PiCar to digital data
 func rawToDigital(rawData: Array) -> Array:
 	var returns = [0, 0, 0, 0, 0]
 	for i in range(5):
