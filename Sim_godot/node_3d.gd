@@ -33,6 +33,9 @@ var lastDirection # 0 : Left, 1 : Right
 
 # state variable
 var state
+var nextState
+var delay
+var timer
 
 # Avoidance state variables
 var avoidance_timer
@@ -67,8 +70,9 @@ func _process(delta):
 	readPiCar()
 	
 	# logic
-	stateMachine(delta)
+        fastStateMachine(delta)
 	move(delta)
+	
 	
 	# Picar Communication
 	sendPiCar({0:movementSpeed, 1:-wheelAngleTarget+100})
@@ -99,8 +103,14 @@ func move(delta: float) -> void:
 		else:
 			movementSpeed -= maxAcc * delta
 
-func fastStateMachine():
+func fastStateMachine(delta: float) -> void:
 	match state:
+		-3: # wait for next state
+			timer += delta
+			if timer > delay:
+				state = nextState
+				timer = 0.0
+
 		-2: # Connection state
 			if ws.get_ready_state() == WebSocketPeer.STATE_OPEN:
 				connected = true
@@ -108,8 +118,10 @@ func fastStateMachine():
 				state = -1
 			speedTarget = 0.0
 			wheelAngleTarget = 0.0
+			
 		-1: # Start state
 			var i = 0
+			
 		0: # Line follower state
 			var i = 0
 
@@ -212,6 +224,7 @@ func stateMachine(delta: float) -> void:
 			if detection != [0, 0, 0, 0, 0]:
 				state = 0
 				avoidance_timer = 0.0
+
 
 	
 func reversing() -> void:
