@@ -15,7 +15,7 @@ const slowSpeed = 6.0*maxSpeed/8.0
 const reverseAngle = 3.75*maxAngle/45.0
 const littleAngle = 3.0*maxAngle/45.0
 const midAngle = 10.0*maxAngle/45.0
-const mediumLargeAngle = 23.0*maxAngle/45.0
+const mediumLargeAngle = 25.0*maxAngle/45.0
 const bigAngle = 30.0*maxAngle/45.0
 const panicAngle = 45.0*maxAngle/45.0
 
@@ -29,7 +29,7 @@ const obstacleDetectionDistance = 20 # cm - trigger avoidance if obstacle within
 var movementSpeed
 var wheelAngleTarget
 var speedTarget
-var lastDirection # 0 : Left, 1 : Right
+var lastDirection # 1 : Left, 0 : Right
 
 # state variable
 var state
@@ -39,7 +39,7 @@ var timer
 
 # Avoidance state variables
 var avoidance_timer
-var avoidance_direction  # 0 = left, 1 = right - which way to dodge
+var avoidance_direction = 1  # 1 = left, 0 = right - which way to dodge
 
 # picar connection and data
 var picar_data
@@ -102,6 +102,10 @@ func move(delta: float) -> void:
 # Refactor of stateMachine with optimization 
 func fastStateMachine(delta: float) -> void:
 	match state:
+		-4: # complete stop
+			speedTarget = 0.0
+			wheelAngleTarget = 0.0
+			
 		-3: # wait for next state
 			timer += delta
 			if timer > delay:
@@ -116,9 +120,25 @@ func fastStateMachine(delta: float) -> void:
 			wheelAngleTarget = 0.0
 			
 		-1: # Start state
-			pass
+			if picar_data["Raw"] == [1, 1, 1, 1, 1]:
+				speedTarget = maxSpeed
+			var sum = picar_data["Raw"][0] + picar_data["Raw"][1] + picar_data["Raw"][2] + picar_data["Raw"][3] + picar_data["Raw"][4]
+			if sum < 3:
+				state = 0
+				
 		0: # Line follower state
-			pass
+			timer += delta
+			if picar_data["UltraValue"] != null && picar_data["UltraValue"] > obstacleDetectionDistance:
+				state = 1
+				timer = 0.0
+			elif picar_data["Raw"] == [1, 1, 1, 1, 1]:
+				state = -4
+				timer = 0.0
+			elif picar_data["Raw"] == [0, 0, 0, 0, 0] && timer > 2:
+				state = 1 # figurer quel state mettre
+			else:
+				lineFollower()
+				timer = 0.0
 
 # To Be Deleted
 func stateMachine(delta: float) -> void:
