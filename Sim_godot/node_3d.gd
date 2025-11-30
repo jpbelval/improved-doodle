@@ -50,6 +50,7 @@ var avoidance_timer
 var picar_data
 var ws
 var connected
+var lineValue
 
 func _ready():
 	print("Connecting…")
@@ -68,6 +69,7 @@ func _ready():
 	timer = 0.0
 	movement = 0.0
 	connected = false
+	lineValue = 0
 
 func _process(delta):
 	# Receve PiCar communication
@@ -90,6 +92,9 @@ func rawToDigital(rawData: Array) -> Array:
 		else:
 			returns[i] = 0
 	return returns
+	
+func digitalToInt(rawData: Array) -> int:
+	return rawData[0] << 4 | rawData[1] << 3 | rawData[2] << 2 | rawData[3] << 1 | rawData[4]
 
 # Set movementSpeed with acceleration
 func move(delta: float) -> void:
@@ -145,9 +150,9 @@ func fastStateMachine(delta: float) -> void:
 			wheelAngleTarget = 0.0
 			
 		-1: # Start state
-			if picar_data["Raw"] == [1, 1, 1, 1, 1]:
+			if lineValue == 31:
 				speedTarget = maxSpeed
-			if speedTarget != 0 && picar_data["Raw"][0] + picar_data["Raw"][1] + picar_data["Raw"][2] + picar_data["Raw"][3] + picar_data["Raw"][4] < 3:
+			if speedTarget != 0 && lineValue != 31:
 				state = 0
 				
 		0: # Line follower state
@@ -155,10 +160,10 @@ func fastStateMachine(delta: float) -> void:
 			if picar_data["UltraValue"] != null && picar_data["UltraValue"] < obstacleDetectionDistance:
 				state = 1
 				timer = 0.0
-			elif picar_data["Raw"] == [1, 1, 1, 1, 1]:
+			elif lineValue == 31:
 				state = -4
 				timer = 0.0
-			elif picar_data["Raw"] == [0, 0, 0, 0, 0] && timer > 1.75:
+			elif !lineValue && timer > 1.75:
 				state = -3 # figurer quel state mettre
 				timer = 0.0
 				if wheelAngleTarget > 0:
@@ -169,7 +174,7 @@ func fastStateMachine(delta: float) -> void:
 				nextState = 10
 			else:
 				lineFollower()
-				if(picar_data["Raw"] != [0, 0, 0, 0, 0]):
+				if lineValue:
 					timer = 0.0
 
 		1: # Reverse until 30 cm
@@ -201,7 +206,7 @@ func fastStateMachine(delta: float) -> void:
 			timer += delta
 			speedTarget = -midSlowSpeed
 			setWheelAngle(lastDirection, -bigAngle)
-			if picar_data["Raw"] != [0, 0, 0, 0, 0]:
+			if lineValue:
 				state = 0
 				timer = 0.0
 				speedTarget = 0.0
@@ -301,16 +306,16 @@ func stateMachine(delta: float) -> void:
 
 # Set wheelAngle to follow the line
 func lineFollower(reverse: int = 1) -> void:
-	if picar_data["Raw"] == [0, 0, 1, 0, 0]:
+	if lineValue == 4:
 		wheelAngleTarget = 0.0
-	elif picar_data["Raw"] == [0, 1, 1, 0, 0] || picar_data["Raw"]  == [0, 0, 1, 1, 0]:
-		setWheelAngle(picar_data["Raw"][1], reverse*littleAngle)
-	elif picar_data["Raw"] == [0, 1, 0, 0, 0] || picar_data["Raw"]  == [0, 0, 0, 1, 0]:
-		setWheelAngle(picar_data["Raw"][1], reverse*midAngle)
-	elif picar_data["Raw"] == [1, 1, 0, 0, 0] || picar_data["Raw"]  == [0, 0, 0, 1, 1]:
-		setWheelAngle(picar_data["Raw"][1], reverse*bigAngle)
-	elif picar_data["Raw"] == [1, 0, 0, 0, 0] || picar_data["Raw"]  == [0, 0, 0, 0, 1]:
-		setWheelAngle(picar_data["Raw"][0], reverse*panicAngle)
+	elif lineValue == 12 || lineValue  == 6:
+		setWheelAngle(lineValue >> 3, reverse*littleAngle)
+	elif lineValue == 8 || lineValue  == 2:
+		setWheelAngle(lineValue >> 3, reverse*midAngle)
+	elif lineValue == 24 || lineValue  == 3:
+		setWheelAngle(lineValue >> 3, reverse*bigAngle)
+	elif lineValue == 16 || lineValue  == 1:
+		setWheelAngle(lineValue >> 4, reverse*panicAngle)
 	setSpeed()
 
 # Transform relative angle and direction to real angle
@@ -326,7 +331,7 @@ func setSpeed() -> void:
 func readPiCar(printData: bool = false) -> void:
 	while ws.get_available_packet_count() > 0:
 		picar_data = JSON.parse_string(ws.get_packet().get_string_from_utf8())
-		picar_data["Raw"] = rawToDigital(picar_data["Raw"])
+		lineValue = digitalToInt(rawToDigital(picar_data["Raw"]))
 	if printData:
 		print(picar_data)
 
