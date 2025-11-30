@@ -3,7 +3,8 @@ extends Node
 # Max constantes
 const maxAngle = 45.0 # deg
 const maxSpeed = 40 # %/s
-const maxAcc = 32 # %/s2
+const moveAcc = 32 # %/s2 line follower acceleration
+const dodgeAcc = 65 # dodging acceleration (start stop only)
 const maxWheelSpeed = 138.0 # deg/s
 
 # Speed constantes
@@ -24,7 +25,7 @@ const panicAngle = 45.0*maxAngle/45.0
 const reference = [65.0, 65.0, 53.5, 74.0, 64.5]
 
 # Obstacle avoidance constants
-const obstacleDetectionDistance = 20 # cm - trigger avoidance if obstacle within this distance
+const obstacleDetectionDistance = 18 # cm - trigger avoidance if obstacle within this distance
 
 # Avoidance constants
 const avoidance_direction = 1  # 1 = left, 0 = right - which way to dodge
@@ -36,6 +37,7 @@ var speedTarget
 var wheelAngle
 var lastDirection # 1 : Left, 0 : Right
 var movement
+var acceleration = moveAcc
 
 # state variable
 var state
@@ -100,15 +102,15 @@ func digitalToInt(rawData: Array) -> int:
 func move(delta: float) -> void:
 	# Speed update
 	if movementSpeed < speedTarget:
-		if movementSpeed + maxAcc * delta > speedTarget:
+		if movementSpeed + acceleration * delta > speedTarget:
 			movementSpeed = speedTarget
 		else:
-			movementSpeed += maxAcc * delta
+			movementSpeed += acceleration * delta
 	elif movementSpeed > speedTarget:
-		if movementSpeed - maxAcc * delta < speedTarget:
+		if movementSpeed - acceleration * delta < speedTarget:
 			movementSpeed = speedTarget
 		else:
-			movementSpeed -= maxAcc * delta
+			movementSpeed -= acceleration * delta
 	
 	# Angle update
 	if wheelAngle < wheelAngleTarget:
@@ -158,12 +160,16 @@ func fastStateMachine(delta: float) -> void:
 		0: # Line follower state
 			timer += delta
 			if picar_data["UltraValue"] != null && picar_data["UltraValue"] < obstacleDetectionDistance:
-				state = 1
+				state = -3
 				timer = 0.0
+				acceleration = dodgeAcc
+				speedTarget = 0.0
+				nextState = 1
+				delay = 1
 			elif lineValue == 31:
 				state = -4
 				timer = 0.0
-			elif !lineValue && timer > 1.75:
+			elif !lineValue && timer > 1.3:
 				state = -3 # figurer quel state mettre
 				timer = 0.0
 				if wheelAngleTarget > 0:
@@ -178,30 +184,43 @@ func fastStateMachine(delta: float) -> void:
 					timer = 0.0
 
 		1: # Reverse until 30 cm
-			timer = 0.0
+			timer += delta
 			
-			if timer > 1:
-				lineFollower(-1)
-			else:
-				speedTarget = 0
-				
-			if picar_data["UltraValue"] > 23:
+			lineFollower(-1)
+			if picar_data["UltraValue"] > 18:
 				state = -3
 				nextState = 2
+				speedTarget = 0.0
 				timer = 0.0
 				delay = 1
-			elif timer > 15:
+				acceleration = moveAcc
+			elif timer > 10:
 				state = 0 # find back step
 				timer = 0.0
 				wheelAngleTarget = 0.0
+				acceleration = moveAcc
 			
 		2: # leave line
 			timer += delta
-			movement += movementSpeed * timer
-			if movement > 10:
-				state = -4
+			state = -3
+			nextState = 3
+			setWheelAngle(avoidance_direction, mediumLargeAngle)
+			speedTarget = midSpeed
+			delay = 2.20
+		
+		3: # parall elize peopele
+			timer += delta
+			state = -3
+			nextState = 4
+			setWheelAngle(avoidance_direction, -mediumLargeAngle)
+			delay = 1.75
+		
+		4: # fine the laine (not hutson)
+			if lineValue == 8 || lineValue == 4:
+				setWheelAngle(avoidance_direction, mediumLargeAngle)
+				state = 0
 				timer = 0.0
-
+			
 		10: # retour sur la ligne
 			timer += delta
 			speedTarget = -midSlowSpeed
@@ -210,99 +229,6 @@ func fastStateMachine(delta: float) -> void:
 				state = 0
 				timer = 0.0
 				speedTarget = 0.0
-
-# To Be Deleted
-func stateMachine(delta: float) -> void:
-	match state:
-		-1:
-			if picar_data["Raw"] == [1, 1, 1, 1, 1]:
-				speedTarget = maxSpeed
-			var sum = picar_data["Raw"][0] + picar_data["Raw"][1] + picar_data["Raw"][2] + picar_data["Raw"][3] + picar_data["Raw"][4]
-			if sum < 3:
-				state = 0
-			
-		0: # Follow Line
-			lineFollower()
-			avoidance_timer += delta
-			if picar_data["UltraValue"] != null:
-				if picar_data["UltraValue"] < obstacleDetectionDistance:
-					state = 2 
-					avoidance_timer = 0.0
-			var detection = picar_data["Raw"]
-			if avoidance_timer > 2 && detection == [0, 0, 0, 0, 0]:
-				state = 8
-				avoidance_timer = 0.0
-			
-		2: # Reverse maneuver
-			avoidance_timer += delta
-			if avoidance_timer > 1:
-				lineFollower(-1)
-			else:
-				speedTarget = 0
-			
-			if avoidance_timer > 20.0 || picar_data["UltraValue"] > 23:
-				state = 5
-				avoidance_timer = 0
-				wheelAngleTarget = 0.0
-				
-		3: # Dodge obstacle
-			speedTarget = maxSpeed
-			avoidance_timer += delta
-			if avoidance_timer > 1:
-				state = 4
-				avoidance_timer = 0.0
-			if picar_data["UltraValue"] != null:
-				if picar_data["UltraValue"] < obstacleDetectionDistance:
-					state = 2
-				
-		4: # dodge obstacle
-			avoidance_timer += delta
-			if picar_data["UltraValue"] != null && avoidance_timer > 5.0:
-				if picar_data["UltraValue"] < obstacleDetectionDistance:
-					state = 2
-			
-			var detection = picar_data["Raw"]
-			if detection == [0, 0, 0, 0, 0] && avoidance_timer > 0.9 && avoidance_timer < 1.5 :
-				wheelAngleTarget = 0.0
-			elif detection == [0, 0, 0, 0, 0] && avoidance_timer > 1.75 && avoidance_timer < 2.5:
-				setWheelAngle(avoidance_direction, panicAngle)
-				if detection != [0, 0, 0, 0, 0]:
-					lineFollower()
-					state = 0
-					avoidance_timer = 0.0
-			elif detection == [0, 0, 0, 0, 0] && avoidance_timer > 3:
-				setWheelAngle(avoidance_direction, mediumLargeAngle)
-				state = 6
-				avoidance_timer = 0.0
-			
-		5:
-			avoidance_timer += delta
-			if avoidance_timer < 1:
-				wheelAngleTarget = 0.0
-				speedTarget = 0.0
-			elif avoidance_timer > 1 && avoidance_timer < 1.5:
-				setWheelAngle(avoidance_direction, -mediumLargeAngle)
-			elif avoidance_timer > 1.5:
-				state = 3
-				avoidance_timer = 0.0
-			
-		6:
-			if picar_data["UltraValue"] != null:
-				if picar_data["UltraValue"] < obstacleDetectionDistance:
-					state = 2
-			var detection = picar_data["Raw"]
-			if detection != [0, 0, 0, 0, 0]:
-				state = 0
-		7:
-			speedTarget = 0.0
-			wheelAngleTarget = 0.0
-		8: 
-			speedTarget = -slowSpeed
-			setWheelAngle(avoidance_direction, -panicAngle)
-			var detection = picar_data["Raw"]
-			if detection != [0, 0, 0, 0, 0]:
-				state = 0
-				avoidance_timer = 0.0
 
 # Set wheelAngle to follow the line
 func lineFollower(reverse: int = 1) -> void:
@@ -316,7 +242,7 @@ func lineFollower(reverse: int = 1) -> void:
 		setWheelAngle(lineValue >> 3, reverse*bigAngle)
 	elif lineValue == 16 || lineValue  == 1:
 		setWheelAngle(lineValue >> 4, reverse*panicAngle)
-	setSpeed()
+	setSpeed(reverse)
 
 # Transform relative angle and direction to real angle
 # direction is only 1 or 0 : 1 -> left, 0 -> right
@@ -324,8 +250,8 @@ func setWheelAngle(direction: int, angle: float)->void:
 	wheelAngleTarget = direction*angle + (direction-1)*angle
 
 # Transform the speed depending on the wheels angle
-func setSpeed() -> void:
-	speedTarget = (-1.0/170.0 * abs(wheelAngleTarget) + 1) * maxSpeed
+func setSpeed(reverse: int = 1) -> void:
+	speedTarget = (-1.0/170.0 * abs(wheelAngleTarget) + 1) * maxSpeed * reverse
 
 # Get data from PiCar
 func readPiCar(printData: bool = false) -> void:
