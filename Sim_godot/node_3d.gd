@@ -165,7 +165,7 @@ func fastStateMachine(delta: float) -> void:
 					lastDirection = 1
 				else:
 					lastDirection = 0
-				delay = 0.22
+				delay = 0.15
 				nextState = 10
 			else:
 				lineFollower()
@@ -200,7 +200,7 @@ func fastStateMachine(delta: float) -> void:
 		10: # retour sur la ligne
 			timer += delta
 			speedTarget = -midSlowSpeed
-			setWheelAngle(lastDirection, -mediumLargeAngle)
+			setWheelAngle(lastDirection, -bigAngle)
 			if picar_data["Raw"] != [0, 0, 0, 0, 0]:
 				state = 0
 				timer = 0.0
