@@ -2,9 +2,9 @@ extends Node
 
 # Max constantes
 const maxAngle = 45.0 # deg
-const maxSpeed = 39 # %/s
-const maxAcc = 36 # %/s2
-const maxWheelSpeed = 135.0 # deg/s
+const maxSpeed = 40 # %/s
+const maxAcc = 32 # %/s2
+const maxWheelSpeed = 138.0 # deg/s
 
 # Speed constantes
 const fullSpeed = maxSpeed
@@ -205,7 +205,7 @@ func fastStateMachine(delta: float) -> void:
 		10: # retour sur la ligne
 			timer += delta
 			speedTarget = -midSlowSpeed
-			setWheelAngle(lastDirection, -bigAngle)
+			setWheelAngle(lastDirection, -mediumLargeAngle)
 			if lineValue:
 				state = 0
 				timer = 0.0
@@ -325,7 +325,7 @@ func setWheelAngle(direction: int, angle: float)->void:
 
 # Transform the speed depending on the wheels angle
 func setSpeed() -> void:
-	speedTarget = (-1.0/160.0 * abs(wheelAngleTarget) + 1) * maxSpeed
+	speedTarget = (-1.0/170.0 * abs(wheelAngleTarget) + 1) * maxSpeed
 
 # Get data from PiCar
 func readPiCar(printData: bool = false) -> void:
