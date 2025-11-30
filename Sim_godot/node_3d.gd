@@ -7,7 +7,7 @@ const maxAcc = 35 # %/s2
 const maxWheelSpeed = 140.0 # deg/s
 
 # Speed constantes
-const fullSpeed = 8.0*maxSpeed/8.0
+const fullSpeed = maxSpeed
 const midSpeed = 7.0*maxSpeed/8.0
 const slowSpeed = 6.0*maxSpeed/8.0
 
@@ -75,7 +75,9 @@ func _process(delta):
 	
 	# logic
 	fastStateMachine(delta)
+	setSpeed()
 	move(delta)
+	
 	# Send Picar Communication
 	sendPiCar({0:movementSpeed, 1:-wheelAngle+100})
 
@@ -203,6 +205,7 @@ func fastStateMachine(delta: float) -> void:
 			if picar_data["Raw"] != [0, 0, 0, 0, 0]:
 				state = 0
 				timer = 0.0
+
 # To Be Deleted
 func stateMachine(delta: float) -> void:
 	match state:
@@ -313,6 +316,10 @@ func lineFollower(reverse: int = 1) -> void:
 # direction is only 1 or 0 : 1 -> left, 0 -> right
 func setWheelAngle(direction: int, angle: float)->void:
 	wheelAngleTarget = direction*angle + (direction-1)*angle
+
+# Transform the speed depending on the wheels angle
+func setSpeed() -> void:
+	speedTarget = (-0.011 * abs(wheelAngleTarget) + 1) * maxSpeed
 
 # Get data from PiCar
 func readPiCar(printData: bool = false) -> void:
