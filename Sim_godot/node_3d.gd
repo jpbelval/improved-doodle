@@ -2,13 +2,14 @@ extends Node
 
 # Max constantes
 const maxAngle = 45.0 # deg
-const maxSpeed = 35 # %/s
-const maxAcc = 35 # %/s2
-const maxWheelSpeed = 140.0 # deg/s
+const maxSpeed = 39 # %/s
+const maxAcc = 36 # %/s2
+const maxWheelSpeed = 135.0 # deg/s
 
 # Speed constantes
 const fullSpeed = maxSpeed
 const midSpeed = 7.0*maxSpeed/8.0
+const midSlowSpeed = 6.5*maxSpeed/8.0
 const slowSpeed = 6.0*maxSpeed/8.0
 
 # Angle constantes
@@ -20,7 +21,7 @@ const bigAngle = 30.0*maxAngle/45.0
 const panicAngle = 45.0*maxAngle/45.0
 
 # reference for the line module
-const reference = [66.5, 67.0, 56.5, 79.0, 66.0]
+const reference = [65.0, 65.0, 53.5, 74.0, 64.5]
 
 # Obstacle avoidance constants
 const obstacleDetectionDistance = 20 # cm - trigger avoidance if obstacle within this distance
@@ -62,7 +63,7 @@ func _ready():
 	# Public
 	wheelAngleTarget = 0.0 # deg
 	wheelAngle = 0.0
-	speedTarget = 0.2 # m/s
+	speedTarget = 0.0 # m/s
 	avoidance_timer = 0.0
 	timer = 0.0
 	movement = 0.0
@@ -75,7 +76,6 @@ func _process(delta):
 	
 	# logic
 	fastStateMachine(delta)
-	setSpeed()
 	move(delta)
 	
 	# Send Picar Communication
@@ -158,18 +158,17 @@ func fastStateMachine(delta: float) -> void:
 			elif picar_data["Raw"] == [1, 1, 1, 1, 1]:
 				state = -4
 				timer = 0.0
-			elif picar_data["Raw"] == [0, 0, 0, 0, 0] && timer > 1:
+			elif picar_data["Raw"] == [0, 0, 0, 0, 0] && timer > 1.75:
 				state = -3 # figurer quel state mettre
 				timer = 0.0
 				if wheelAngleTarget > 0:
 					lastDirection = 1
 				else:
 					lastDirection = 0
-				delay = 0.25
+				delay = 0.22
 				nextState = 10
 			else:
 				lineFollower()
-				speedTarget = maxSpeed
 				if(picar_data["Raw"] != [0, 0, 0, 0, 0]):
 					timer = 0.0
 
@@ -200,11 +199,12 @@ func fastStateMachine(delta: float) -> void:
 
 		10: # retour sur la ligne
 			timer += delta
-			speedTarget = -midSpeed
+			speedTarget = -midSlowSpeed
 			setWheelAngle(lastDirection, -mediumLargeAngle)
 			if picar_data["Raw"] != [0, 0, 0, 0, 0]:
 				state = 0
 				timer = 0.0
+				speedTarget = 0.0
 
 # To Be Deleted
 func stateMachine(delta: float) -> void:
@@ -311,6 +311,7 @@ func lineFollower(reverse: int = 1) -> void:
 		setWheelAngle(picar_data["Raw"][1], reverse*bigAngle)
 	elif picar_data["Raw"] == [1, 0, 0, 0, 0] || picar_data["Raw"]  == [0, 0, 0, 0, 1]:
 		setWheelAngle(picar_data["Raw"][0], reverse*panicAngle)
+	setSpeed()
 
 # Transform relative angle and direction to real angle
 # direction is only 1 or 0 : 1 -> left, 0 -> right
@@ -319,7 +320,7 @@ func setWheelAngle(direction: int, angle: float)->void:
 
 # Transform the speed depending on the wheels angle
 func setSpeed() -> void:
-	speedTarget = (-0.011 * abs(wheelAngleTarget) + 1) * maxSpeed
+	speedTarget = (-1.0/160.0 * abs(wheelAngleTarget) + 1) * maxSpeed
 
 # Get data from PiCar
 func readPiCar(printData: bool = false) -> void:
