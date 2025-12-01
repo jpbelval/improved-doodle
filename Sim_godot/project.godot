@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Test_S5e_Projet"
-run/main_scene="res://main.tscn"
+run/main_scene="uid://cw61p380jqwd2"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
 
