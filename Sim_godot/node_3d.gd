@@ -2,8 +2,8 @@ extends Node
 
 # Max constantes
 const maxAngle = 45.0 # deg
-const maxSpeed = 40 # %/s
-const moveAcc = 32 # %/s2 line follower acceleration
+const maxSpeed = 38 # %/s
+const moveAcc = 30 # %/s2 line follower acceleration
 const dodgeAcc = 65 # dodging acceleration (start stop only)
 const maxWheelSpeed = 138.0 # deg/s
 
@@ -22,7 +22,7 @@ const bigAngle = 30.0*maxAngle/45.0
 const panicAngle = 45.0*maxAngle/45.0
 
 # reference for the line module
-const reference = [65.0, 65.0, 53.5, 74.0, 64.5]
+const reference = [70.0, 70.0, 57.0, 78.0, 67.5]
 
 # Obstacle avoidance constants
 const obstacleDetectionDistance = 18 # cm - trigger avoidance if obstacle within this distance
@@ -168,6 +168,7 @@ func fastStateMachine(delta: float) -> void:
 				delay = 1
 			elif lineValue == 31:
 				state = -4
+				acceleration = dodgeAcc
 				timer = 0.0
 			elif !lineValue && timer > 1.3:
 				state = -3 # figurer quel state mettre
@@ -176,7 +177,8 @@ func fastStateMachine(delta: float) -> void:
 					lastDirection = 1
 				else:
 					lastDirection = 0
-				delay = 0.15
+				delay = 0.25
+				speedTarget = 0.0
 				nextState = 10
 			else:
 				lineFollower()
@@ -215,8 +217,8 @@ func fastStateMachine(delta: float) -> void:
 			setWheelAngle(avoidance_direction, -mediumLargeAngle)
 			delay = 1.75
 		
-		4: # fine the laine (not hutson)
-			if lineValue == 8 || lineValue == 4:
+		4: # fine the laine (not hutson) (gsp voice)
+			if lineValue == 2 || lineValue == 4 || lineValue == 6  :
 				setWheelAngle(avoidance_direction, mediumLargeAngle)
 				state = 0
 				timer = 0.0
@@ -251,7 +253,7 @@ func setWheelAngle(direction: int, angle: float)->void:
 
 # Transform the speed depending on the wheels angle
 func setSpeed(reverse: int = 1) -> void:
-	speedTarget = (-1.0/170.0 * abs(wheelAngleTarget) + 1) * maxSpeed * reverse
+	speedTarget = (-1.0/300.0 * abs(wheelAngleTarget) + 1) * maxSpeed * reverse
 
 # Get data from PiCar
 func readPiCar(printData: bool = false) -> void:
