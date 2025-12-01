@@ -4,6 +4,7 @@ extends Node
 const maxAngle = 45.0 # deg
 const maxSpeed = 38 # %/s
 const moveAcc = 30 # %/s2 line follower acceleration
+const accAcc = 30 # %/s3 
 const dodgeAcc = 65 # dodging acceleration (start stop only)
 const maxWheelSpeed = 138.0 # deg/s
 
@@ -35,6 +36,7 @@ var movementSpeed
 var wheelAngleTarget
 var speedTarget
 var wheelAngle
+var accelerationTarget
 var lastDirection # 1 : Left, 0 : Right
 var movement
 var acceleration = moveAcc
@@ -75,6 +77,8 @@ func _ready():
 	movement = 0.0
 	connected = false
 	lineValue = 0
+	accelerationTarget = 0.0
+	acceleration = 0.0
 	
 	wasTurning = 0.0
 	turnAvg = 0.0
@@ -107,6 +111,18 @@ func digitalToInt(rawData: Array) -> int:
 
 # Set movementSpeed with acceleration
 func move(delta: float) -> void:
+	# acceleration update
+	if acceleration < accelerationTarget:
+		if acceleration + accAcc * delta > accelerationTarget:
+			acceleration = accelerationTarget
+		else:
+			acceleration += accAcc * delta
+	elif acceleration > accelerationTarget:
+		if acceleration - accAcc * delta < accelerationTarget:
+			acceleration = accelerationTarget
+		else:
+			acceleration -= accAcc * delta
+	
 	# Speed update
 	if movementSpeed < speedTarget:
 		if movementSpeed + acceleration * delta > speedTarget:
@@ -161,6 +177,7 @@ func fastStateMachine(delta: float) -> void:
 		-1: # Start state
 			if lineValue == 31:
 				speedTarget = maxSpeed
+				accelerationTarget = moveAcc
 			if speedTarget != 0 && lineValue != 31:
 				state = 0
 				
@@ -169,13 +186,14 @@ func fastStateMachine(delta: float) -> void:
 			if picar_data["UltraValue"] != null && picar_data["UltraValue"] < obstacleDetectionDistance:
 				state = -3
 				timer = 0.0
-				acceleration = dodgeAcc
+				accelerationTarget = dodgeAcc
 				speedTarget = 0.0
 				nextState = 1
 				delay = 1
 			elif lineValue == 31:
 				state = -4
-				acceleration = dodgeAcc
+				accelerationTarget = dodgeAcc
+				acceleration = accelerationTarget
 				timer = 0.0
 			elif !lineValue && timer > 1.3:
 				state = -3 # figurer quel state mettre
@@ -202,12 +220,12 @@ func fastStateMachine(delta: float) -> void:
 				speedTarget = 0.0
 				timer = 0.0
 				delay = 1
-				acceleration = moveAcc
+				accelerationTarget = moveAcc
 			elif timer > 10:
 				state = 0 # find back step
 				timer = 0.0
 				wheelAngleTarget = 0.0
-				acceleration = moveAcc
+				accelerationTarget = moveAcc
 			
 		2: # leave line
 			timer += delta
