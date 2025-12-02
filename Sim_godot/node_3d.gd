@@ -72,7 +72,7 @@ func _init():
 	
 	# Public
 	wheelAngleTarget = 0.0 # deg
-	wheelAngle = 0.0o:
+	wheelAngle = 0.0
 	speedTarget = 0.0 # m/s
 	correction_timer = 0.0
 	timer = 0.0
