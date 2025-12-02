@@ -4,7 +4,7 @@ extends SceneTree
 const maxAngle = 45.0 # deg
 const maxSpeed = 38 # %/s
 const moveAcc = 30 # %/s2 line follower acceleration
-const accAcc = 30 # %/s3 
+const accAcc = 60 # %/s3 
 const dodgeAcc = 65 # dodging acceleration (start stop only)
 const maxWheelSpeed = 138.0 # deg/s
 
@@ -27,7 +27,7 @@ const reference = [65.5, 64.0, 55.0, 76.5, 66.0]
 
 # Obstacle avoidance constants
 const obstacleDetectionDistance = 20 # cm - trigger avoidance if obstacle within this distance
-
+const obstacleStartDistance = 29 
 # Avoidance constants
 const avoidance_direction = 1  # 1 = left, 0 = right - which way to dodge
 
@@ -41,7 +41,7 @@ var lastDirection # 1 : Left, 0 : Right
 var movement
 var acceleration = moveAcc
 var wasTurning
-var turnAvg
+var turnAvgo:
 var amount
 
 # state variable
@@ -72,7 +72,7 @@ func _init():
 	
 	# Public
 	wheelAngleTarget = 0.0 # deg
-	wheelAngle = 0.0
+	wheelAngle = 0.0o:
 	speedTarget = 0.0 # m/s
 	correction_timer = 0.0
 	timer = 0.0
@@ -219,7 +219,7 @@ func fastStateMachine(delta: float) -> void:
 			timer += delta
 			
 			lineFollower(-1)
-			if picar_data["UltraValue"] > 20:
+			if picar_data["UltraValue"] > obstacleStartDistance:
 				state = -3
 				nextState = 2
 				speedTarget = 0.0
