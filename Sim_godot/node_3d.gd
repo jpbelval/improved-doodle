@@ -1,4 +1,4 @@
-extends Node
+extends SceneTree
 
 # Max constantes
 const maxAngle = 45.0 # deg
@@ -59,7 +59,7 @@ var ws
 var connected
 var lineValue
 
-func _ready():
+func _init():
 	print("Connecting…")
 	ws = WebSocketPeer.new()
 	ws.connect_to_url("ws://10.0.0.175:8765")  # Adresse du PiCar
