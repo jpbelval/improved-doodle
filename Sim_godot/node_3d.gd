@@ -95,6 +95,7 @@ func _process(delta):
 	
 	# Send Picar Communication
 	sendPiCar({0:movementSpeed, 1:-wheelAngle+100})
+	await create_timer(0.05).timeout
 
 # Transform raw data from the PiCar to digital data
 func rawToDigital(rawData: Array) -> Array:
