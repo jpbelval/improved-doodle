@@ -26,7 +26,7 @@ const panicAngle = 45.0*maxAngle/45.0
 const reference = [65.5, 64.0, 55.0, 76.5, 66.0]
 
 # Obstacle avoidance constants
-const obstacleDetectionDistance = 18 # cm - trigger avoidance if obstacle within this distance
+const obstacleDetectionDistance = 20 # cm - trigger avoidance if obstacle within this distance
 
 # Avoidance constants
 const avoidance_direction = 1  # 1 = left, 0 = right - which way to dodge
@@ -214,7 +214,7 @@ func fastStateMachine(delta: float) -> void:
 			timer += delta
 			
 			lineFollower(-1)
-			if picar_data["UltraValue"] > 18:
+			if picar_data["UltraValue"] > 20:
 				state = -3
 				nextState = 2
 				speedTarget = 0.0
