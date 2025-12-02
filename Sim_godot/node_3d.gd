@@ -62,7 +62,7 @@ var lineValue
 func _init():
 	print("Connecting…")
 	ws = WebSocketPeer.new()
-	ws.connect_to_url("ws://192.168.2.104:8765")  # Adresse du PiCar
+	ws.connect_to_url("ws://127.0.0.1:8765")  # Adresse du PiCar
 	
 	# Private
 	movementSpeed = 0.0 # m/s
