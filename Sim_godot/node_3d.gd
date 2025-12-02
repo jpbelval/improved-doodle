@@ -59,6 +59,8 @@ var ws
 var connected
 var lineValue
 
+var globalTimer
+
 func _init():
 	print("Connecting…")
 	ws = WebSocketPeer.new()
@@ -83,8 +85,11 @@ func _init():
 	wasTurning = 0.0
 	turnAvg = 0.0
 	amount = 0
+	
+	globalTimer = 0.0
 
 func _process(delta):
+	globalTimer += delta
 	# Receve PiCar communication
 	ws.poll()
 	readPiCar()
@@ -316,6 +321,8 @@ func readPiCar(printData: bool = false) -> void:
 
 # Send data to PiCar
 func sendPiCar(data: Dictionary, printData: bool = false) -> void:
-	ws.send_text(JSON.stringify(data, "\t"))
+	if globalTimer > 0.05:
+		globalTimer -= 0.05
+		ws.send_text(JSON.stringify(data, "\t"))
 	if printData:
 		print(JSON.stringify(data, "\t"))
