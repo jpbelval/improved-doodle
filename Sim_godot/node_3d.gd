@@ -321,8 +321,8 @@ func readPiCar(printData: bool = false) -> void:
 
 # Send data to PiCar
 func sendPiCar(data: Dictionary, printData: bool = false) -> void:
-	if globalTimer > 0.05:
-		globalTimer -= 0.05
+	if globalTimer > 0.033:
+		globalTimer -= 0.033
 		ws.send_text(JSON.stringify(data, "\t"))
 	if printData:
 		print(JSON.stringify(data, "\t"))
