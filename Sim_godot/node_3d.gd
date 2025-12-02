@@ -41,7 +41,7 @@ var lastDirection # 1 : Left, 0 : Right
 var movement
 var acceleration = moveAcc
 var wasTurning
-var turnAvgo:
+var turnAvg
 var amount
 
 # state variable
