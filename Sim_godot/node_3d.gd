@@ -305,9 +305,11 @@ func setSpeed(reverse: int = 1) -> void:
 
 # Get data from PiCar
 func readPiCar(printData: bool = false) -> void:
+	var pkt
 	while ws.get_available_packet_count() > 0:
-		picar_data = JSON.parse_string(ws.get_packet().get_string_from_utf8())
-		lineValue = digitalToInt(rawToDigital(picar_data["Raw"]))
+		pkt = ws.get_packet()
+	picar_data = JSON.parse_string(pkt.get_string_from_utf8())
+	lineValue = digitalToInt(rawToDigital(picar_data["Raw"]))
 	if printData:
 		print(picar_data)
 
