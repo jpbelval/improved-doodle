@@ -23,7 +23,7 @@ const bigAngle = 30.0*maxAngle/45.0
 const panicAngle = 45.0*maxAngle/45.0
 
 # reference for the line module
-const reference = [70.0, 70.0, 57.0, 78.0, 67.5]
+const reference = [65.5, 64.0, 55.0, 76.5, 66.0]
 
 # Obstacle avoidance constants
 const obstacleDetectionDistance = 18 # cm - trigger avoidance if obstacle within this distance
