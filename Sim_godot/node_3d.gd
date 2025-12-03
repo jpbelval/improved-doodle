@@ -260,9 +260,13 @@ func fastStateMachine(delta: float) -> void:
 			speedTarget = -midSlowSpeed
 			setWheelAngle(lastDirection, -mediumLargeAngle)
 			if lineValue:
-				state = 0
+				state = -3
+				nextState = 0
+                                delay = 0.25
 				timer = 0.0
 				speedTarget = 0.0
+                11: # post turn line follower
+                        pass
 
 # Set wheelAngle to follow the line
 func lineFollower(reverse: int = 1) -> void:
