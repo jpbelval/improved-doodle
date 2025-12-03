@@ -261,7 +261,7 @@ func fastStateMachine(delta: float) -> void:
 			setWheelAngle(lastDirection, -mediumLargeAngle)
 			if lineValue:
 				state = -3
-				nextState = 0
+                                nextState = 0
                                 delay = 0.25
 				timer = 0.0
 				speedTarget = 0.0
