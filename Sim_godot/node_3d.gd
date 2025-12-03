@@ -279,7 +279,7 @@ func fastStateMachine(delta: float) -> void:
 		11: # post turn line follower
 			timer += delta
 			attenuatedLineFollower()
-			if timer > 3 && lineValue == 4:
+			if timer > 3 && (lineValue == 2 || lineValue == 4 || lineValue == 6):
 				state = 0
 				timer = 0.0
 			elif timer > 4 && !lineValue:
