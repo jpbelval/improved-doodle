@@ -352,7 +352,7 @@ func setWheelAngle(direction: int, angle: float)->void:
 
 # Transform the speed depending on the wheels angle
 func setSpeed(reverse: int = 1) -> void:
-	speedTarget = (-1.0/400.0 * abs(wheelAngleTarget) + 1) * maxSpeed * reverse
+	speedTarget = (-1.0/350.0 * abs(wheelAngleTarget) + 1) * maxSpeed * reverse
 
 # Get data from PiCar
 func readPiCar(printData: bool = false) -> void:
