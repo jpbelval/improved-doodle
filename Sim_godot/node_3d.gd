@@ -23,12 +23,20 @@ const mediumLukaAngle = 27.0*maxAngle/45.0
 const bigAngle = 30.0*maxAngle/45.0
 const panicAngle = 45.0*maxAngle/45.0
 
+# Angle constantes attenuees
+const aLittleAngle = 3.0*maxAngle/45.0
+const aMidAngle = 10.0*maxAngle/45.0
+const aMediumLargeAngle = 20.0*maxAngle/45.0
+const aMediumLukaAngle = 22.0*maxAngle/45.0
+const aBigAngle = 25.0*maxAngle/45.0
+const aPanicAngle = 30.0*maxAngle/45.0
+
 # reference for the line module
 const reference = [65.5, 64.0, 55.0, 76.5, 66.0]
 
 # Obstacle avoidance constants
 const obstacleDetectionDistance = 20 # cm - trigger avoidance if obstacle within this distance
-const obstacleStartDistance = 30 # cm -  distance at which the car stops reversing
+const obstacleStartDistance = 32 # cm -  distance at which the car stops reversing
 
 # Avoidance constants
 const avoidance_direction = 1  # 1 = left, 0 = right - which way to dodge
@@ -261,12 +269,17 @@ func fastStateMachine(delta: float) -> void:
 			setWheelAngle(lastDirection, -mediumLargeAngle)
 			if lineValue:
 				state = -3
-				nextState = 0
+				nextState = 11
 				delay = 0.25
 				timer = 0.0
 				speedTarget = 0.0
 		11: # post turn line follower
-			pass
+			timer += delta
+			attenuatedLineFollower()
+			if timer > 3 && lineValue == 4:
+				state = 0
+				timer = 0.0
+
 
 # Set wheelAngle to follow the line
 func lineFollower(reverse: int = 1) -> void:
@@ -281,6 +294,19 @@ func lineFollower(reverse: int = 1) -> void:
 	elif lineValue == 16 || lineValue  == 1:
 		setWheelAngle(lineValue >> 4, reverse*panicAngle)
 	setSpeed(reverse)
+
+func attenuatedLineFollower(reverse: int = 1) -> void:
+	if lineValue == 4:
+		wheelAngleTarget = 0.0
+	elif lineValue == 12 || lineValue  == 6:
+		setWheelAngle(lineValue >> 3, reverse*littleAngle)
+	elif lineValue == 8 || lineValue  == 2:
+		setWheelAngle(lineValue >> 3, reverse*midAngle)
+	elif lineValue == 24 || lineValue  == 3:
+		setWheelAngle(lineValue >> 3, reverse*bigAngle)
+	elif lineValue == 16 || lineValue  == 1:
+		setWheelAngle(lineValue >> 4, reverse*panicAngle)
+	speedTarget = midSlowSpeed
 
 # Transform relative angle and direction to real angle
 # direction is only 1 or 0 : 1 -> left, 0 -> right
