@@ -36,7 +36,7 @@ const reference = [65.5, 64.0, 55.0, 76.5, 66.0]
 
 # Obstacle avoidance constants
 const obstacleDetectionDistance = 20 # cm - trigger avoidance if obstacle within this distance
-const obstacleStartDistance = 25 # cm -  distance at which the car stops reversing
+const obstacleStartDistance = 24 # cm -  distance at which the car stops reversing
 
 # Avoidance constants
 const avoidance_direction = 1  # 1 = left, 0 = right - which way to dodge
@@ -248,9 +248,9 @@ func fastStateMachine(delta: float) -> void:
 			timer += delta
 			state = -3
 			nextState = 3
-			setWheelAngle(avoidance_direction, 20)
+			setWheelAngle(avoidance_direction, 25)
 			speedTarget = midSpeed
-			delay = 3.3
+			delay = 2
 		
 		3: # parall elize peopele
 			timer += delta
@@ -261,7 +261,6 @@ func fastStateMachine(delta: float) -> void:
 		
 		4: # fine the laine (not hutson) (gsp voice)
 			if lineValue == 2 || lineValue == 6 || lineValue == 4  :
-				setWheelAngle(avoidance_direction, mediumLukaAngle)
 				state = 0
 				timer = 0.0
 			
@@ -310,17 +309,17 @@ func lineFollower(reverse: int = 1) -> void:
 		setWheelAngle(lineValue >> 4, reverse*panicAngle)
 	setSpeed(reverse)
 
-func attenuatedLineFollower(reverse: int = 1) -> void:
+func attenuatedLineFollower() -> void:
 	if lineValue == 4:
 		wheelAngleTarget = 0.0
 	elif lineValue == 12 || lineValue  == 6:
-		setWheelAngle(lineValue >> 3, reverse*littleAngle)
+		setWheelAngle(lineValue >> 3, aLittleAngle)
 	elif lineValue == 8 || lineValue  == 2:
-		setWheelAngle(lineValue >> 3, reverse*midAngle)
+		setWheelAngle(lineValue >> 3, aMidAngle)
 	elif lineValue == 24 || lineValue  == 3:
-		setWheelAngle(lineValue >> 3, reverse*bigAngle)
+		setWheelAngle(lineValue >> 3, aBigAngle)
 	elif lineValue == 16 || lineValue  == 1:
-		setWheelAngle(lineValue >> 4, reverse*panicAngle)
+		setWheelAngle(lineValue >> 4, aPanicAngle)
 	speedTarget = midSlowSpeed
 
 # Transform relative angle and direction to real angle
