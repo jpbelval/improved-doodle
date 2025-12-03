@@ -205,7 +205,7 @@ func fastStateMachine(delta: float) -> void:
 				speedTarget = 0.0
 				nextState = 1
 				delay = 3
-			elif lineValue == 31:
+			elif picar_data["Raw"][0] + picar_data["Raw"][1] + picar_data["Raw"][2] + picar_data["Raw"][3] + picar_data["Raw"][4] > 3:
 				state = -4
 				accelerationTarget = dodgeAcc
 				acceleration = accelerationTarget
@@ -246,9 +246,9 @@ func fastStateMachine(delta: float) -> void:
 			timer += delta
 			state = -3
 			nextState = 3
-			setWheelAngle(avoidance_direction, mediumLargeAngle)
+			setWheelAngle(avoidance_direction, mediumAngle)
 			speedTarget = midSpeed
-			delay = 2.5
+			delay = 5
 		
 		3: # parall elize peopele
 			timer += delta
@@ -284,6 +284,11 @@ func fastStateMachine(delta: float) -> void:
 				speedTarget = 0.0
 				nextState = 10
 				state = -3
+				timer = 0.0
+ 			elif picar_data["Raw"][0] + picar_data["Raw"][1] + picar_data["Raw"][2] + picar_data["Raw"][3] + picar_data["Raw"][4] > 3:
+				state = -4
+				accelerationTarget = dodgeAcc
+				acceleration = accelerationTarget
 				timer = 0.0
 
 
@@ -331,7 +336,8 @@ func readPiCar(printData: bool = false) -> void:
 		while ws.get_available_packet_count() > 0:
 			pkt = ws.get_packet()
 		picar_data = JSON.parse_string(pkt.get_string_from_utf8())
-		lineValue = digitalToInt(rawToDigital(picar_data["Raw"]))
+		picar_data["Raw"] = rawToDigital(picar_data["Raw"])
+		lineValue = digitalToInt(picar_data["Raw"])
 		if printData:
 			print(picar_data)
 
