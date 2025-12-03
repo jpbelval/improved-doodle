@@ -2,7 +2,7 @@ extends SceneTree
 
 # Max constantes
 const maxAngle = 45.0 # deg
-const maxSpeed = 38 # %/s
+const maxSpeed = 42 # %/s
 const moveAcc = 30 # %/s2 line follower acceleration
 const accAcc = 55 # %/s3 
 const dodgeAcc = 65 # dodging acceleration (start stop only)
@@ -204,7 +204,7 @@ func fastStateMachine(delta: float) -> void:
 				accelerationTarget = dodgeAcc
 				speedTarget = 0.0
 				nextState = 1
-				delay = 3
+				delay = 2
 			elif picar_data["Raw"][0] + picar_data["Raw"][1] + picar_data["Raw"][2] + picar_data["Raw"][3] + picar_data["Raw"][4] > 3:
 				state = -4
 				accelerationTarget = dodgeAcc
