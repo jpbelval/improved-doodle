@@ -230,7 +230,7 @@ func fastStateMachine(delta: float) -> void:
 		1: # Reverse until 30 cm
 			timer += delta
 			
-			lineFollower(-1)
+			attenuatedLineFollower(-1)
 			if picar_data["UltraValue"] > obstacleStartDistance:
 				state = -3
 				nextState = 2
@@ -333,18 +333,18 @@ func lineFollower(reverse: int = 1) -> void:
 		setWheelAngle(lineValue >> 4, reverse*panicAngle)
 	setSpeed(reverse)
 
-func attenuatedLineFollower() -> void:
+func attenuatedLineFollower(reverse: int = 1) -> void:
 	if lineValue == 4:
 		wheelAngleTarget = 0.0
 	elif lineValue == 12 || lineValue  == 6:
-		setWheelAngle(lineValue >> 3, aLittleAngle)
+		setWheelAngle(lineValue >> 3, reverse*aLittleAngle)
 	elif lineValue == 8 || lineValue  == 2:
-		setWheelAngle(lineValue >> 3, aMidAngle)
+		setWheelAngle(lineValue >> 3, reverse*aMidAngle)
 	elif lineValue == 24 || lineValue  == 3:
-		setWheelAngle(lineValue >> 3, aBigAngle)
+		setWheelAngle(lineValue >> 3, reverse*aBigAngle)
 	elif lineValue == 16 || lineValue  == 1:
-		setWheelAngle(lineValue >> 4, aPanicAngle)
-	speedTarget = midSlowSpeed
+		setWheelAngle(lineValue >> 4, reverse*aPanicAngle)
+	speedTarget = midSlowSpeed*reverse
 
 # Transform relative angle and direction to real angle
 # direction is only 1 or 0 : 1 -> left, 0 -> right
