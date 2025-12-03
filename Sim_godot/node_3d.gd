@@ -19,7 +19,7 @@ const reverseAngle = 3.75*maxAngle/45.0
 const littleAngle = 3.0*maxAngle/45.0
 const midAngle = 10.0*maxAngle/45.0
 const mediumLargeAngle = 25.0*maxAngle/45.0
-const mediumLukaAngle = 27.0*maxAngle/45.0
+const mediumLukaAngle = 27.5*maxAngle/45.0
 const bigAngle = 30.0*maxAngle/45.0
 const panicAngle = 45.0*maxAngle/45.0
 
