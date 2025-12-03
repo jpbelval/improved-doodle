@@ -285,7 +285,7 @@ func fastStateMachine(delta: float) -> void:
 				nextState = 10
 				state = -3
 				timer = 0.0
-				elif picar_data["Raw"][0] + picar_data["Raw"][1] + picar_data["Raw"][2] + picar_data["Raw"][3] + picar_data["Raw"][4] > 3:
+			elif picar_data["Raw"][0] + picar_data["Raw"][1] + picar_data["Raw"][2] + picar_data["Raw"][3] + picar_data["Raw"][4] > 3:
 				state = -4
 				accelerationTarget = dodgeAcc
 				acceleration = accelerationTarget
