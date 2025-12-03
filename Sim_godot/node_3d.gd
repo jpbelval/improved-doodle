@@ -272,7 +272,7 @@ func fastStateMachine(delta: float) -> void:
 				setWheelAngle(avoidance_direction, mediumLukaAngle)
 				nextState = 0
 				state = -3
-				delay = 0.25
+				delay = 0.30
 				timer = 0.0
 				
 		
