@@ -268,7 +268,7 @@ func fastStateMachine(delta: float) -> void:
 			state = -3
 			nextState = 5
 			delay = 1
-			wheelAngleTarget 0.0
+			wheelAngleTarget = 0.0
 		
 		5: # fine the laine (not hutson) (gsp voice)
 			if wheelAngle != midAngle:
