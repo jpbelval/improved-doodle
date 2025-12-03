@@ -204,7 +204,7 @@ func fastStateMachine(delta: float) -> void:
 				timer = 0.0
 				acceleration = dodgeAcc
 				nextState = 1
-				delay = 1.5
+				delay = 1
 			elif picar_data["Raw"][0] + picar_data["Raw"][1] + picar_data["Raw"][2] + picar_data["Raw"][3] + picar_data["Raw"][4] > 3:
 				state = -4
 				accelerationTarget = dodgeAcc
@@ -247,10 +247,10 @@ func fastStateMachine(delta: float) -> void:
 		2: # leave line
 			timer += delta
 			state = -3
-			nextState = 3
+			nextState = -4
 			setWheelAngle(avoidance_direction, 20)
 			speedTarget = midSpeed
-			delay = 3.3
+			delay = 3
 		
 		3: # parall elize peopele
 			timer += delta
