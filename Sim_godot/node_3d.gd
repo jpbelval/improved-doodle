@@ -36,7 +36,7 @@ const reference = [65.5, 64.0, 55.0, 76.5, 66.0]
 
 # Obstacle avoidance constants
 const obstacleDetectionDistance = 25 # cm - trigger avoidance if obstacle within this distance
-const obstacleStartDistance = 33.5 # cm -  distance at which the car stops reversing
+const obstacleStartDistance = 33 # cm -  distance at which the car stops reversing
 
 # Avoidance constants
 const avoidance_direction = 1  # 1 = left, 0 = right - which way to dodge
@@ -199,12 +199,12 @@ func fastStateMachine(delta: float) -> void:
 		0: # Line follower state
 			timer += delta
 			if picar_data["UltraValue"] != null && picar_data["UltraValue"] < obstacleDetectionDistance:
+				speedTarget = 0.0
 				state = -3
 				timer = 0.0
-				accelerationTarget = dodgeAcc
-				speedTarget = 0.0
+				acceleration = dodgeAcc
 				nextState = 1
-				delay = 2
+				delay = 1.5
 			elif picar_data["Raw"][0] + picar_data["Raw"][1] + picar_data["Raw"][2] + picar_data["Raw"][3] + picar_data["Raw"][4] > 3:
 				state = -4
 				accelerationTarget = dodgeAcc
