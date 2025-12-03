@@ -36,7 +36,7 @@ const reference = [65.5, 64.0, 55.0, 76.5, 66.0]
 
 # Obstacle avoidance constants
 const obstacleDetectionDistance = 20 # cm - trigger avoidance if obstacle within this distance
-const obstacleStartDistance = 24 # cm -  distance at which the car stops reversing
+const obstacleStartDistance = 25 # cm -  distance at which the car stops reversing
 
 # Avoidance constants
 const avoidance_direction = 1  # 1 = left, 0 = right - which way to dodge
@@ -103,7 +103,6 @@ func _process(delta):
 	# Receve PiCar communication
 	ws.poll()
 	readPiCar()
-	# setTurnExitSpeed(delta)
 	# logic
 	fastStateMachine(delta)
 	move(delta)
@@ -213,7 +212,7 @@ func fastStateMachine(delta: float) -> void:
 				wheelAngleTarget = 0.0
 				acceleration = accelerationTarget
 				timer = 0.0
-			elif !lineValue && timer > 1.5:
+			elif !lineValue && timer > 1.4:
 				state = -3 # figurer quel state mettre
 				timer = 0.0
 				if wheelAngleTarget > 0:
@@ -251,7 +250,7 @@ func fastStateMachine(delta: float) -> void:
 			nextState = 3
 			setWheelAngle(avoidance_direction, 20)
 			speedTarget = midSpeed
-			delay = 3.20
+			delay = 3.3
 		
 		3: # parall elize peopele
 			timer += delta
@@ -261,7 +260,7 @@ func fastStateMachine(delta: float) -> void:
 			delay = 1.75
 		
 		4: # fine the laine (not hutson) (gsp voice)
-			if lineValue == 2 || lineValue == 4 || lineValue == 6  :
+			if lineValue == 2 || lineValue == 6 || lineValue == 4  :
 				setWheelAngle(avoidance_direction, mediumLukaAngle)
 				state = 0
 				timer = 0.0
