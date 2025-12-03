@@ -196,7 +196,7 @@ func fastStateMachine(delta: float) -> void:
 				accelerationTarget = dodgeAcc
 				speedTarget = 0.0
 				nextState = 1
-				delay = 1
+				delay = 3
 			elif lineValue == 31:
 				state = -4
 				accelerationTarget = dodgeAcc
