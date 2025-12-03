@@ -35,8 +35,8 @@ const aPanicAngle = 30.0*maxAngle/45.0
 const reference = [65.5, 64.0, 55.0, 76.5, 66.0]
 
 # Obstacle avoidance constants
-const obstacleDetectionDistance = 18 # cm - trigger avoidance if obstacle within this distance
-const obstacleStartDistance = 27 # cm -  distance at which the car stops reversing
+const obstacleDetectionDistance = 19 # cm - trigger avoidance if obstacle within this distance
+const obstacleStartDistance = 26 # cm -  distance at which the car stops reversing
 
 # Avoidance constants
 const avoidance_direction = 1  # 1 = left, 0 = right - which way to dodge
@@ -251,7 +251,7 @@ func fastStateMachine(delta: float) -> void:
 			nextState = 3
 			setWheelAngle(avoidance_direction, 20)
 			speedTarget = midSpeed
-			delay = 4
+			delay = 3
 		
 		3: # parall elize peopele
 			timer += delta
