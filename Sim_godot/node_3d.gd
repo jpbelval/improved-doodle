@@ -2,7 +2,7 @@ extends SceneTree
 
 # Max constantes
 const maxAngle = 45.0 # deg
-const maxSpeed = 42 # %/s
+const maxSpeed = 41 # %/s
 const moveAcc = 30 # %/s2 line follower acceleration
 const accAcc = 55 # %/s3 
 const dodgeAcc = 65 # dodging acceleration (start stop only)
