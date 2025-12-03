@@ -253,16 +253,17 @@ func fastStateMachine(delta: float) -> void:
 			delay = 2.75
 		3: # go ahead a bit
 			timer += delta
-			wheelAngleTarget = 0.0
 			state = -3
 			nextState = 4
-			delay = 0.4
+			delay = 0.25
+			setWheelAngle(avoidance_direction, -20)
+
 		4: # turn back
 			timer += delta
 			state = -3
 			nextState = -4
 			setWheelAngle(avoidance_direction, -bigAngle)
-			delay = 1.8
+			delay = 2
 		
 		5: # stright to line 
 			timer += delta
