@@ -35,7 +35,7 @@ const aPanicAngle = 30.0*maxAngle/45.0
 const reference = [65.5, 64.0, 55.0, 76.5, 66.0]
 
 # Obstacle avoidance constants
-const obstacleDetectionDistance = 19 # cm - trigger avoidance if obstacle within this distance
+const obstacleDetectionDistance = 20 # cm - trigger avoidance if obstacle within this distance
 const obstacleStartDistance = 24 # cm -  distance at which the car stops reversing
 
 # Avoidance constants
@@ -279,17 +279,13 @@ func fastStateMachine(delta: float) -> void:
 		11: # post turn line follower
 			timer += delta
 			attenuatedLineFollower()
-			if timer > 3 && (lineValue == 2 || lineValue == 4 || lineValue == 6):
+			if lineValue == 6 || lineValue == 4 || lineValue == 12:
 				state = 0
 				timer = 0.0
 			elif timer > 4 && !lineValue:
 				speedTarget = 0.0
 				state = -3 # figurer quel state mettre
 				timer = 0.0
-				if wheelAngleTarget > 0:
-					lastDirection = 1
-				else:
-					lastDirection = 0
 				delay = 0.25
 				nextState = 10
 			elif picar_data["Raw"][0] + picar_data["Raw"][1] + picar_data["Raw"][2] + picar_data["Raw"][3] + picar_data["Raw"][4] > 3:
@@ -297,6 +293,7 @@ func fastStateMachine(delta: float) -> void:
 				accelerationTarget = dodgeAcc
 				acceleration = accelerationTarget
 				timer = 0.0
+			
 
 
 
