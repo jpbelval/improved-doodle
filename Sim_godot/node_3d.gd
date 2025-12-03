@@ -36,7 +36,7 @@ const reference = [65.5, 64.0, 55.0, 76.5, 66.0]
 
 # Obstacle avoidance constants
 const obstacleDetectionDistance = 19 # cm - trigger avoidance if obstacle within this distance
-const obstacleStartDistance = 25 # cm -  distance at which the car stops reversing
+const obstacleStartDistance = 24 # cm -  distance at which the car stops reversing
 
 # Avoidance constants
 const avoidance_direction = 1  # 1 = left, 0 = right - which way to dodge
@@ -257,13 +257,13 @@ func fastStateMachine(delta: float) -> void:
 			timer += delta
 			state = -3
 			nextState = 4
-			setWheelAngle(avoidance_direction, -mediumLargeAngle)
+			setWheelAngle(avoidance_direction, -25)
 			delay = 1.75
 		
 		4: # fine the laine (not hutson) (gsp voice)
 			if lineValue == 2 || lineValue == 4 || lineValue == 6  :
 				setWheelAngle(avoidance_direction, mediumLukaAngle)
-				state = 0
+				state = 11
 				timer = 0.0
 			
 		10: # retour sur la ligne
