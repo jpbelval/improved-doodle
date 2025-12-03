@@ -266,7 +266,7 @@ func fastStateMachine(delta: float) -> void:
 		
 		5: # stright to line 
 			timer += delta
-			setWheelAngle = 0.0
+			wheelAngleTarget = 0.0
 			if lineValue:
 				state = -4
 				accelerationTarget = dodgeAcc
