@@ -212,7 +212,6 @@ func fastStateMachine(delta: float) -> void:
 				speedTarget = 0.0
 				wheelAngleTarget = 0.0
 				acceleration = accelerationTarget
-				speedTarget = 0.0
 				timer = 0.0
 			elif !lineValue && timer > 1.5:
 				state = -3 # figurer quel state mettre
