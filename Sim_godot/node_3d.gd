@@ -263,7 +263,7 @@ func fastStateMachine(delta: float) -> void:
 		4: # fine the laine (not hutson) (gsp voice)
 			if lineValue == 2 || lineValue == 4 || lineValue == 6  :
 				setWheelAngle(avoidance_direction, mediumLukaAngle)
-				state = 11
+				state = 0
 				timer = 0.0
 			
 		10: # retour sur la ligne
@@ -283,11 +283,15 @@ func fastStateMachine(delta: float) -> void:
 				state = 0
 				timer = 0.0
 			elif timer > 4 && !lineValue:
-				delay = 0.25
 				speedTarget = 0.0
-				nextState = 10
-				state = -3
+				state = -3 # figurer quel state mettre
 				timer = 0.0
+				if wheelAngleTarget > 0:
+					lastDirection = 1
+				else:
+					lastDirection = 0
+				delay = 0.25
+				nextState = 10
 			elif picar_data["Raw"][0] + picar_data["Raw"][1] + picar_data["Raw"][2] + picar_data["Raw"][3] + picar_data["Raw"][4] > 3:
 				state = -4
 				accelerationTarget = dodgeAcc
