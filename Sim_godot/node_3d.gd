@@ -248,31 +248,18 @@ func fastStateMachine(delta: float) -> void:
 			timer += delta
 			state = -3
 			nextState = 3
-			setWheelAngle(avoidance_direction, 25)
+			setWheelAngle(avoidance_direction, 20)
 			speedTarget = midSpeed
-			delay = 3.75
+			delay = 3.3
 		
 		3: # parall elize peopele
 			timer += delta
 			state = -3
 			nextState = 4
 			setWheelAngle(avoidance_direction, -mediumLukaAngle)
-			delay = 2.5
+			delay = 1.5
 		
-		# 4: # fine the laine (not hutson) (gsp voice)
-		# 	if lineValue == 2 || lineValue == 6 || lineValue == 4  :
-		# 		state = 
-		# 		timer = 0.0
-		4: # straighten up commander is watching
-			timer += delta
-			state = -3
-			nextState = 5
-			delay = 1
-			wheelAngleTarget = 0.0
-		
-		5: # fine the laine (not hutson) (gsp voice)
-			if wheelAngle != midAngle:
-				setWheelAngle(avoidance_direction, midAngle)
+		4: # fine the laine (not hutson) (gsp voice)
 			if lineValue == 2 || lineValue == 6 || lineValue == 4  :
 				state = 0
 				timer = 0.0
