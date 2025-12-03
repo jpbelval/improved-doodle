@@ -285,30 +285,7 @@ func setWheelAngle(direction: int, angle: float)->void:
 
 # Transform the speed depending on the wheels angle
 func setSpeed(reverse: int = 1) -> void:
-	speedTarget = (-1.0/360.0 * abs(wheelAngleTarget) + 1) * maxSpeed * reverse
-	# if lineValue == 4 && turnAvg != 0:
-	# 	speedTarget *= (1/turnAvg)
-
-# func setTurnExitSpeed(delta: float)->void:
-# 	correction_timer += delta
-# 	if  correction_timer > 5:
-# 		wasTurning = 0.0
-# 		turnAvg = 0.0
-# 		correction_timer = 0.0
-	
-# 	if lineValue == 12 || lineValue  == 6:
-# 		wasTurning += 0.5
-# 	elif lineValue == 8 || lineValue  == 2:
-# 		wasTurning += 1
-# 	elif lineValue == 24 || lineValue  == 3:
-# 		wasTurning += 1.5
-# 	elif lineValue == 16 || lineValue  == 1:
-# 		wasTurning += 2
-# 	if lineValue != 4:
-# 		correction_timer = 0.0
-# 		amount += 1
-# 	turnAvg = wasTurning/amount
-
+	speedTarget = (-1.0/400.0 * abs(wheelAngleTarget) + 1) * maxSpeed * reverse
 
 # Get data from PiCar
 func readPiCar(printData: bool = false) -> void:
