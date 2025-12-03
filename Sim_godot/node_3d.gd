@@ -279,6 +279,13 @@ func fastStateMachine(delta: float) -> void:
 			if timer > 3 && lineValue == 4:
 				state = 0
 				timer = 0.0
+			elif timer > 1 && !lineValue:
+				delay = 0.25
+				speedTarget = 0.0
+				nextState = 10
+				state = -3
+				timer = 0.0
+
 
 
 # Set wheelAngle to follow the line
