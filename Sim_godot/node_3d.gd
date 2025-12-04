@@ -102,7 +102,7 @@ func _process(delta):
 	globalTimer += delta
 	# Receve PiCar communication
 	ws.poll()
-	readPiCar()
+	readPiCar(true)
 	# logic
 	fastStateMachine(delta)
 	move(delta)
