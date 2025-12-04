@@ -36,7 +36,7 @@ const reference = [67.0, 68.5, 57.0, 78.5, 65.5]
 
 # Obstacle avoidance constants
 const obstacleDetectionDistance = 20 # cm - trigger avoidance if obstacle within this distance
-const obstacleStartDistance = 26 # cm -  distance at which the car stops reversing
+const obstacleStartDistance = 27 # cm -  distance at which the car stops reversing
 
 # Avoidance constants
 const avoidance_direction = 1  # 1 = left, 0 = right - which way to dodge
