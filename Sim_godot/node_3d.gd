@@ -2,7 +2,7 @@ extends SceneTree
 
 # Max constantes
 const maxAngle = 45.0 # deg
-const maxSpeed = 38 # %/s
+const maxSpeed = 41 # %/s
 const moveAcc = 30 # %/s2 line follower acceleration
 const accAcc = 55 # %/s3 
 const dodgeAcc = 65 # dodging acceleration (start stop only)
@@ -11,24 +11,32 @@ const maxWheelSpeed = 138.0 # deg/s
 # Speed constantes
 const fullSpeed = maxSpeed
 const midSpeed = 7.0*maxSpeed/8.0
-const midSlowSpeed = 6.5*maxSpeed/8.0
+const midSlowSpeed = 6.0*maxSpeed/8.0
 const slowSpeed = 6.0*maxSpeed/8.0
 
 # Angle constantes
-const reverseAngle = 3.75*maxAngle/45.0
-const littleAngle = 3.0*maxAngle/45.0
-const midAngle = 10.0*maxAngle/45.0
-const mediumLargeAngle = 25.0*maxAngle/45.0
-const mediumLukaAngle = 27.0*maxAngle/45.0
-const bigAngle = 30.0*maxAngle/45.0
-const panicAngle = 45.0*maxAngle/45.0
+const reverseAngle = 3.75
+const littleAngle = 3.0
+const midAngle = 10.0
+const mediumLargeAngle = 25.0
+const mediumLukaAngle = 27.5
+const bigAngle = 30.0
+const panicAngle = 50.0
+
+# Angle constantes attenuees
+const aLittleAngle = 3.0
+const aMidAngle = 10.0
+const aMediumLargeAngle = 20.0
+const aMediumLukaAngle = 22.0
+const aBigAngle = 25.0
+const aPanicAngle = 30.0
 
 # reference for the line module
-const reference = [65.5, 64.0, 55.0, 76.5, 66.0]
+const reference = [67.0, 68.5, 57.0, 78.5, 65.5]
 
 # Obstacle avoidance constants
 const obstacleDetectionDistance = 20 # cm - trigger avoidance if obstacle within this distance
-const obstacleStartDistance = 30 # cm -  distance at which the car stops reversing
+const obstacleStartDistance = 28 # cm -  distance at which the car stops reversing
 
 # Avoidance constants
 const avoidance_direction = 1  # 1 = left, 0 = right - which way to dodge
@@ -95,7 +103,6 @@ func _process(delta):
 	# Receve PiCar communication
 	ws.poll()
 	readPiCar()
-	# setTurnExitSpeed(delta)
 	# logic
 	fastStateMachine(delta)
 	move(delta)
@@ -160,9 +167,11 @@ func fastStateMachine(delta: float) -> void:
 		-5: # debug
 			setWheelAngle(avoidance_direction, bigAngle)
 			speedTarget = 30
+		
 		-4: # Complete stop
 			speedTarget = 0.0
 			wheelAngleTarget = 0.0
+			state = -4
 			
 		-3: # Wait for next state
 			timer += delta
@@ -191,25 +200,27 @@ func fastStateMachine(delta: float) -> void:
 		0: # Line follower state
 			timer += delta
 			if picar_data["UltraValue"] != null && picar_data["UltraValue"] < obstacleDetectionDistance:
+				speedTarget = 0.0
 				state = -3
 				timer = 0.0
-				accelerationTarget = dodgeAcc
-				speedTarget = 0.0
+				acceleration = dodgeAcc
 				nextState = 1
-				delay = 3
-			elif lineValue == 31:
+				delay = 1
+			elif picar_data["Raw"][0] + picar_data["Raw"][1] + picar_data["Raw"][2] + picar_data["Raw"][3] + picar_data["Raw"][4] > 3:
 				state = -4
 				accelerationTarget = dodgeAcc
+				speedTarget = 0.0
+				wheelAngleTarget = 0.0
 				acceleration = accelerationTarget
 				timer = 0.0
-			elif !lineValue && timer > 1.3:
+			elif !lineValue && timer > 0.45:
 				state = -3 # figurer quel state mettre
 				timer = 0.0
 				if wheelAngleTarget > 0:
 					lastDirection = 1
 				else:
 					lastDirection = 0
-				delay = 0.25
+				delay = 0.5
 				speedTarget = 0.0
 				nextState = 10
 			else:
@@ -220,7 +231,7 @@ func fastStateMachine(delta: float) -> void:
 		1: # Reverse until 30 cm
 			timer += delta
 			
-			lineFollower(-1)
+			attenuatedLineFollower(-1)
 			if picar_data["UltraValue"] > obstacleStartDistance:
 				state = -3
 				nextState = 2
@@ -238,31 +249,81 @@ func fastStateMachine(delta: float) -> void:
 			timer += delta
 			state = -3
 			nextState = 3
-			setWheelAngle(avoidance_direction, mediumLargeAngle)
+			setWheelAngle(avoidance_direction, 20)
 			speedTarget = midSpeed
-			delay = 2.20
-		
-		3: # parall elize peopele
+			delay = 2.75
+		3: # go ahead a bit
 			timer += delta
 			state = -3
 			nextState = 4
-			setWheelAngle(avoidance_direction, -mediumLargeAngle)
-			delay = 1.75
+			delay = 0.35
+			wheelAngleTarget = 0.0
+
+		4: # turn back
+			timer += delta
+			state = -3
+			nextState = 5
+			setWheelAngle(avoidance_direction, -bigAngle)
+			delay = 2.2
 		
-		4: # fine the laine (not hutson) (gsp voice)
-			if lineValue == 2 || lineValue == 4 || lineValue == 6  :
-				setWheelAngle(avoidance_direction, mediumLukaAngle)
-				state = 0
+		5: # stright to line 
+			wheelAngleTarget = 0.0
+			if lineValue:
+				state = -3
+				nextState = 0
+				delay = 0.5
+				speedTarget = 0.0
 				timer = 0.0
-			
+				
+		
+		# 3: # parall elize peopele
+		# 	timer += delta
+		# 	state = -3
+		# 	nextState = -4
+		# 	setWheelAngle(avoidance_direction, -mediumLukaAngle)
+		# 	delay = 1.5
+		
+		# 4: # fine the laine (not hutson) (gsp voice)
+		# 	if lineValue == 2 || lineValue == 6 || lineValue == 4  :
+		# 		state = 0
+		# 		timer = 0.0
+
 		10: # retour sur la ligne
 			timer += delta
 			speedTarget = -midSlowSpeed
 			setWheelAngle(lastDirection, -mediumLargeAngle)
-			if lineValue:
+			if lastDirection:
+				if lineValue && !picar_data["Raw"][4]:
+					state = -3
+					nextState = 11
+					delay = 0.25
+					timer = 0.0
+					speedTarget = 0.0
+			else:
+				if lineValue && !picar_data["Raw"][0]:
+					state = -3
+					nextState = 11
+					delay = 0.25
+					timer = 0.0
+					speedTarget = 0.0
+		
+		11: # post turn line follower
+			timer += delta
+			attenuatedLineFollower()
+			if lineValue == 6 || lineValue == 4 || lineValue == 12:
 				state = 0
 				timer = 0.0
+			elif timer > 4 && !lineValue:
 				speedTarget = 0.0
+				state = -3 # figurer quel state mettre
+				timer = 0.0
+				delay = 0.25
+				nextState = 10
+			elif picar_data["Raw"][0] + picar_data["Raw"][1] + picar_data["Raw"][2] + picar_data["Raw"][3] + picar_data["Raw"][4] > 3:
+				state = -4
+				accelerationTarget = dodgeAcc
+				acceleration = accelerationTarget
+				timer = 0.0
 
 # Set wheelAngle to follow the line
 func lineFollower(reverse: int = 1) -> void:
@@ -277,6 +338,19 @@ func lineFollower(reverse: int = 1) -> void:
 	elif lineValue == 16 || lineValue  == 1:
 		setWheelAngle(lineValue >> 4, reverse*panicAngle)
 	setSpeed(reverse)
+
+func attenuatedLineFollower(reverse: int = 1) -> void:
+	if lineValue == 4:
+		wheelAngleTarget = 0.0
+	elif lineValue == 12 || lineValue  == 6:
+		setWheelAngle(lineValue >> 3, reverse*aLittleAngle)
+	elif lineValue == 8 || lineValue  == 2:
+		setWheelAngle(lineValue >> 3, reverse*aMidAngle)
+	elif lineValue == 24 || lineValue  == 3:
+		setWheelAngle(lineValue >> 3, reverse*aBigAngle)
+	elif lineValue == 16 || lineValue  == 1:
+		setWheelAngle(lineValue >> 4, reverse*aPanicAngle)
+	speedTarget = slowSpeed*reverse
 
 # Transform relative angle and direction to real angle
 # direction is only 1 or 0 : 1 -> left, 0 -> right
@@ -294,14 +368,11 @@ func readPiCar(printData: bool = false) -> void:
 		while ws.get_available_packet_count() > 0:
 			pkt = ws.get_packet()
 		picar_data = JSON.parse_string(pkt.get_string_from_utf8())
-		lineValue = digitalToInt(rawToDigital(picar_data["Raw"]))
-		if printData:
-			print(picar_data)
+		picar_data["Raw"] = rawToDigital(picar_data["Raw"])
+		lineValue = digitalToInt(picar_data["Raw"])
 
 # Send data to PiCar
 func sendPiCar(data: Dictionary, printData: bool = false) -> void:
 	if globalTimer > 0.033:
 		globalTimer -= 0.033
 		ws.send_text(JSON.stringify(data, "\t"))
-	if printData:
-		print(JSON.stringify(data, "\t"))
