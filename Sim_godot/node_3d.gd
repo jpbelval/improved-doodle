@@ -267,6 +267,20 @@ func fastStateMachine(delta: float) -> void:
 				delay = 0.5
 				speedTarget = 0.0
 				timer = 0.0
+			if timer > 3:
+				state = -3
+				nextState = 5
+				delay = 0.5
+				speedTarget = 0.0
+				timer = 0.0
+		5: # a bit straight
+			timer += delta
+			if lineValue:
+				state = -3
+				nextState = 0
+				delay = 0.5
+				speedTarget = 0.0
+				timer = 0.0
 		
 		
 		10: # retour sur la ligne
