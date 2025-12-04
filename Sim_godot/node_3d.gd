@@ -36,7 +36,7 @@ const reference = [67.0, 68.5, 57.0, 78.5, 65.5]
 
 # Obstacle avoidance constants
 const obstacleDetectionDistance = 20 # cm - trigger avoidance if obstacle within this distance
-const obstacleStartDistance = 27 # cm -  distance at which the car stops reversing
+const obstacleStartDistance = 28 # cm -  distance at which the car stops reversing
 
 # Avoidance constants
 const avoidance_direction = 1  # 1 = left, 0 = right - which way to dodge
@@ -219,7 +219,7 @@ func fastStateMachine(delta: float) -> void:
 					lastDirection = 1
 				else:
 					lastDirection = 0
-				delay = 0.25
+				delay = 0.5
 				speedTarget = 0.0
 				nextState = 10
 			else:
@@ -291,12 +291,21 @@ func fastStateMachine(delta: float) -> void:
 			timer += delta
 			speedTarget = -midSlowSpeed
 			setWheelAngle(lastDirection, -mediumLargeAngle)
-			if lineValue:
-				state = -3
-				nextState = 11
-				delay = 0.25
-				timer = 0.0
-				speedTarget = 0.0
+			if lastDirection
+				if lineValue && !picar_data["Raw"][4]:
+					state = -3
+					nextState = 11
+					delay = 0.25
+					timer = 0.0
+					speedTarget = 0.0
+			else:
+				if lineValue && !picar_data["Raw"][0]:
+					state = -3
+					nextState = 11
+					delay = 0.25
+					timer = 0.0
+					speedTarget = 0.0
+		
 		11: # post turn line follower
 			timer += delta
 			attenuatedLineFollower()
