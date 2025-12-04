@@ -291,7 +291,7 @@ func fastStateMachine(delta: float) -> void:
 			timer += delta
 			speedTarget = -midSlowSpeed
 			setWheelAngle(lastDirection, -mediumLargeAngle)
-			if lastDirection
+			if lastDirection:
 				if lineValue && !picar_data["Raw"][4]:
 					state = -3
 					nextState = 11
