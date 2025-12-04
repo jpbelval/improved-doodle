@@ -275,6 +275,7 @@ func fastStateMachine(delta: float) -> void:
 				timer = 0.0
 		5: # a bit straight
 			timer += delta
+			wheelAngleTarget = 0.0
 			if lineValue:
 				state = -3
 				nextState = 0
