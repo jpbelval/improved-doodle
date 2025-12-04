@@ -15,21 +15,21 @@ const midSlowSpeed = 6.5*maxSpeed/8.0
 const slowSpeed = 6.0*maxSpeed/8.0
 
 # Angle constantes
-const reverseAngle = 3.75*maxAngle/45.0
-const littleAngle = 3.0*maxAngle/45.0
-const midAngle = 10.0*maxAngle/45.0
-const mediumLargeAngle = 25.0*maxAngle/45.0
-const mediumLukaAngle = 27.5*maxAngle/45.0
-const bigAngle = 30.0*maxAngle/45.0
-const panicAngle = 45.0*maxAngle/45.0
+const reverseAngle = 3.75
+const littleAngle = 3.0
+const midAngle = 10.0
+const mediumLargeAngle = 25.0
+const mediumLukaAngle = 27.5
+const bigAngle = 30.0
+const panicAngle = 45.0
 
 # Angle constantes attenuees
-const aLittleAngle = 3.0*maxAngle/45.0
-const aMidAngle = 10.0*maxAngle/45.0
-const aMediumLargeAngle = 20.0*maxAngle/45.0
-const aMediumLukaAngle = 22.0*maxAngle/45.0
-const aBigAngle = 25.0*maxAngle/45.0
-const aPanicAngle = 30.0*maxAngle/45.0
+const aLittleAngle = 3.0
+const aMidAngle = 10.0
+const aMediumLargeAngle = 20.0
+const aMediumLukaAngle = 22.0
+const aBigAngle = 25.0
+const aPanicAngle = 30.0
 
 # reference for the line module
 const reference = [67.0, 68.5, 57.0, 78.5, 65.5]
