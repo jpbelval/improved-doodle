@@ -106,6 +106,7 @@ func _process(delta):
 	# logic
 	fastStateMachine(delta)
 	move(delta)
+	print(state)
 	
 	# Send Picar Communication
 	sendPiCar({0:movementSpeed, 1:-wheelAngle+100})
