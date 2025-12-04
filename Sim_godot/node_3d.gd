@@ -21,7 +21,7 @@ const midAngle = 10.0
 const mediumLargeAngle = 25.0
 const mediumLukaAngle = 27.5
 const bigAngle = 30.0
-const panicAngle = 45.0
+const panicAngle = 100.0
 
 # Angle constantes attenuees
 const aLittleAngle = 3.0
@@ -291,7 +291,7 @@ func fastStateMachine(delta: float) -> void:
 			timer += delta
 			speedTarget = -midSlowSpeed
 			setWheelAngle(lastDirection, -mediumLargeAngle)
-			if lastDirection
+			if lastDirection:
 				if lineValue && !picar_data["Raw"][4]:
 					state = -3
 					nextState = 11
