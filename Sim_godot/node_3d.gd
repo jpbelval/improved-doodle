@@ -11,7 +11,7 @@ const maxWheelSpeed = 138.0 # deg/s
 # Speed constantes
 const fullSpeed = maxSpeed
 const midSpeed = 7.0*maxSpeed/8.0
-const midSlowSpeed = 6.5*maxSpeed/8.0
+const midSlowSpeed = 6.0*maxSpeed/8.0
 const slowSpeed = 6.0*maxSpeed/8.0
 
 # Angle constantes
