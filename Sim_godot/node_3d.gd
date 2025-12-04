@@ -102,7 +102,7 @@ func _process(delta):
 	globalTimer += delta
 	# Receve PiCar communication
 	ws.poll()
-	readPiCar()
+	readPiCar(true)
 	# logic
 	fastStateMachine(delta)
 	move(delta)
@@ -370,10 +370,10 @@ func readPiCar(printData: bool = false) -> void:
 		while ws.get_available_packet_count() > 0:
 			pkt = ws.get_packet()
 		picar_data = JSON.parse_string(pkt.get_string_from_utf8())
-		picar_data["Raw"] = rawToDigital(picar_data["Raw"])
-		lineValue = digitalToInt(picar_data["Raw"])
 		if printData:
 			print(picar_data)
+		picar_data["Raw"] = rawToDigital(picar_data["Raw"])
+		lineValue = digitalToInt(picar_data["Raw"])
 
 # Send data to PiCar
 func sendPiCar(data: Dictionary, printData: bool = false) -> void:
