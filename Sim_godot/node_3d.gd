@@ -343,7 +343,7 @@ func attenuatedLineFollower(reverse: int = 1) -> void:
 		setWheelAngle(lineValue >> 3, reverse*aBigAngle)
 	elif lineValue == 16 || lineValue  == 1:
 		setWheelAngle(lineValue >> 4, reverse*aPanicAngle)
-	speedTarget = midSlowSpeed*reverse
+	speedTarget = slowSpeed*reverse
 
 # Transform relative angle and direction to real angle
 # direction is only 1 or 0 : 1 -> left, 0 -> right
