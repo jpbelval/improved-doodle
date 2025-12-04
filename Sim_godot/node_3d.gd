@@ -267,7 +267,7 @@ func fastStateMachine(delta: float) -> void:
 				delay = 0.5
 				speedTarget = 0.0
 				timer = 0.0
-			if timer > 3:
+			if timer > 2.8:
 				state = -3
 				nextState = 5
 				delay = 0.5
