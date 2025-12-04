@@ -167,6 +167,7 @@ func fastStateMachine(delta: float) -> void:
 		-5: # debug
 			setWheelAngle(avoidance_direction, bigAngle)
 			speedTarget = 30
+		
 		-4: # Complete stop
 			speedTarget = 0.0
 			wheelAngleTarget = 0.0
@@ -323,9 +324,6 @@ func fastStateMachine(delta: float) -> void:
 				accelerationTarget = dodgeAcc
 				acceleration = accelerationTarget
 				timer = 0.0
-			
-
-
 
 # Set wheelAngle to follow the line
 func lineFollower(reverse: int = 1) -> void:
