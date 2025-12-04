@@ -11,7 +11,7 @@ const maxWheelSpeed = 138.0 # deg/s
 # Speed constantes
 const fullSpeed = maxSpeed
 const midSpeed = 7.0*maxSpeed/8.0
-const midSlowSpeed = 6.5*maxSpeed/8.0
+const midSlowSpeed = 6.0*maxSpeed/8.0
 const slowSpeed = 6.0*maxSpeed/8.0
 
 # Angle constantes
@@ -21,7 +21,7 @@ const midAngle = 10.0
 const mediumLargeAngle = 25.0
 const mediumLukaAngle = 27.5
 const bigAngle = 30.0
-const panicAngle = 100.0
+const panicAngle = 50.0
 
 # Angle constantes attenuees
 const aLittleAngle = 3.0
@@ -370,8 +370,6 @@ func readPiCar(printData: bool = false) -> void:
 		while ws.get_available_packet_count() > 0:
 			pkt = ws.get_packet()
 		picar_data = JSON.parse_string(pkt.get_string_from_utf8())
-		if printData:
-			print(picar_data)
 		picar_data["Raw"] = rawToDigital(picar_data["Raw"])
 		lineValue = digitalToInt(picar_data["Raw"])
 
@@ -380,5 +378,3 @@ func sendPiCar(data: Dictionary, printData: bool = false) -> void:
 	if globalTimer > 0.033:
 		globalTimer -= 0.033
 		ws.send_text(JSON.stringify(data, "\t"))
-	if printData:
-		print(JSON.stringify(data, "\t"))
