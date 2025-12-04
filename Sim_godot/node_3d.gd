@@ -261,43 +261,33 @@ func fastStateMachine(delta: float) -> void:
 
 		4: # turn back
 			timer += delta
-			state = -3
-			nextState = 5
 			setWheelAngle(avoidance_direction, -bigAngle)
-			delay = 2.2
-		
-		5: # stright to line 
-			wheelAngleTarget = 0.0
 			if lineValue:
 				state = -3
 				nextState = 0
 				delay = 0.5
 				speedTarget = 0.0
 				timer = 0.0
-				
 		
-		# 3: # parall elize peopele
-		# 	timer += delta
-		# 	state = -3
-		# 	nextState = -4
-		# 	setWheelAngle(avoidance_direction, -mediumLukaAngle)
-		# 	delay = 1.5
 		
-		# 4: # fine the laine (not hutson) (gsp voice)
-		# 	if lineValue == 2 || lineValue == 6 || lineValue == 4  :
-		# 		state = 0
-		# 		timer = 0.0
-
 		10: # retour sur la ligne
 			timer += delta
 			speedTarget = -midSlowSpeed
 			setWheelAngle(lastDirection, -mediumLargeAngle)
-			if lineValue:
-				state = -3
-				nextState = 11
-				delay = 0.25
-				timer = 0.0
-				speedTarget = 0.0
+			if lastDirection:
+				if lineValue && !picar_data["Raw"][4]:
+					state = -3
+					nextState = 11
+					delay = 0.25
+					timer = 0.0
+					speedTarget = 0.0
+			else:
+				if lineValue && !picar_data["Raw"][0]:
+					state = -3
+					nextState = 11
+					delay = 0.25
+					timer = 0.0
+					speedTarget = 0.0
 		11: # post turn line follower
 			timer += delta
 			attenuatedLineFollower()
